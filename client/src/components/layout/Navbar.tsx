@@ -9,17 +9,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
-  const [lang, setLang] = useState("en");
+  // Default to Arabic for a fully Arabic experience as requested
+  const [lang, setLang] = useState("ar");
 
-  // Basic language toggle simulation
+  useEffect(() => {
+    // Force Arabic on initial load if requested
+    document.documentElement.dir = "rtl";
+    document.documentElement.lang = "ar";
+  }, []);
+
   const toggleLanguage = (newLang: string) => {
     setLang(newLang);
     document.documentElement.dir = newLang === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = newLang;
-    // In a real app, we'd use i18n, but for mockup we just toggle the attribute
   };
 
   return (
@@ -42,7 +48,6 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Language Toggle */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -59,7 +64,6 @@ export function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -67,7 +71,13 @@ export function Navbar() {
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           >
             <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <motion.div
+              initial={false}
+              animate={{ rotate: theme === "dark" ? 0 : 90, scale: theme === "dark" ? 1 : 0 }}
+              className="absolute"
+            >
+              <Moon className="h-[1.2rem] w-[1.2rem] opacity-0 dark:opacity-100 transition-opacity" />
+            </motion.div>
             <span className="sr-only">Toggle theme</span>
           </Button>
 
