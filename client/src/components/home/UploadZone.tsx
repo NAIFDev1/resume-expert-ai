@@ -1,9 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useLocation } from 'wouter';
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Upload, FileText, CheckCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 
@@ -12,6 +11,7 @@ export function UploadZone() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const isRtl = document.documentElement.dir === "rtl";
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -19,8 +19,8 @@ export function UploadZone() {
 
     if (file.type !== 'application/pdf' && file.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
       toast({
-        title: "Invalid file type",
-        description: "Please upload a PDF or DOCX file.",
+        title: isRtl ? "نوع ملف غير صالح" : "Invalid file type",
+        description: isRtl ? "يرجى رفع ملف PDF أو DOCX فقط." : "Please upload a PDF or DOCX file.",
         variant: "destructive"
       });
       return;
@@ -28,7 +28,6 @@ export function UploadZone() {
 
     setIsUploading(true);
     
-    // Simulate upload progress
     let progress = 0;
     const interval = setInterval(() => {
       progress += 5;
@@ -42,7 +41,7 @@ export function UploadZone() {
       }
     }, 100);
 
-  }, [setLocation, toast]);
+  }, [setLocation, toast, isRtl]);
 
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     onDrop,
@@ -79,10 +78,16 @@ export function UploadZone() {
                 
                 <div className="space-y-2">
                   <h3 className="text-xl font-heading font-semibold">
-                    {isDragActive ? "Drop your resume here" : "Upload your resume"}
+                    {isDragActive 
+                      ? (isRtl ? "ضع سيرتك الذاتية هنا" : "Drop your resume here") 
+                      : (isRtl ? "ارفع سيرتك الذاتية" : "Upload your resume")
+                    }
                   </h3>
                   <p className="text-muted-foreground max-w-xs mx-auto text-sm">
-                    Drag and drop your PDF or DOCX file here, or click to browse.
+                    {isRtl 
+                      ? "اسحب وأسقط ملف PDF أو DOCX هنا، أو انقر للتصفح."
+                      : "Drag and drop your PDF or DOCX file here, or click to browse."
+                    }
                   </p>
                 </div>
 
@@ -97,7 +102,8 @@ export function UploadZone() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-2xl border bg-card p-8 shadow-lg"
+            className="rounded-2xl border bg-card p-8 shadow-lg text-left"
+            dir="ltr" // Keep upload status in LTR for technical consistency or handle RTL specifically
           >
             <div className="flex items-center gap-4 mb-6">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -105,21 +111,23 @@ export function UploadZone() {
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="font-semibold truncate">{acceptedFiles[0]?.name}</h4>
-                <p className="text-sm text-muted-foreground">Analyzing structure & keywords...</p>
+                <p className="text-sm text-muted-foreground">
+                  {isRtl ? "جاري تحليل الهيكل والكلمات..." : "Analyzing structure & keywords..."}
+                </p>
               </div>
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-medium text-muted-foreground">
-                <span>Processing</span>
+                <span>{isRtl ? "جاري المعالجة" : "Processing"}</span>
                 <span>{uploadProgress}%</span>
               </div>
               <Progress value={uploadProgress} className="h-2" />
             </div>
 
             <div className="mt-8 grid grid-cols-3 gap-4">
-               {['Parsing Text', 'ATS Check', 'Skill Gap Analysis'].map((step, i) => (
+               {[(isRtl ? 'تحليل النص' : 'Parsing Text'), (isRtl ? 'فحص ATS' : 'ATS Check'), (isRtl ? 'تحليل المهارات' : 'Skill Gap Analysis')].map((step, i) => (
                  <div key={step} className="flex flex-col items-center gap-2 text-center">
                    <div className={`h-8 w-8 rounded-full flex items-center justify-center transition-colors duration-500 ${
                      uploadProgress > (i * 30 + 30) ? 'bg-green-100 text-green-600' : 'bg-muted text-muted-foreground'
