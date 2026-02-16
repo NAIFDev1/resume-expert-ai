@@ -7,12 +7,15 @@ import { ThemeProvider } from "next-themes";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Analysis from "@/pages/Analysis";
+import Auth from "@/pages/Auth";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/analysis" component={Analysis} />
+      <Route path="/login" component={Auth} />
+      <Route path="/register" component={Auth} />
       <Route component={NotFound} />
     </Switch>
   );
