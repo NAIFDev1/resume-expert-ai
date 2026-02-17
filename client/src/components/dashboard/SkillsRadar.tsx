@@ -2,7 +2,17 @@ import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } fro
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 
-const dataEn = [
+interface SkillData {
+  subject: string;
+  A: number;
+  fullMark: number;
+}
+
+interface SkillsRadarProps {
+  data?: SkillData[];
+}
+
+const defaultDataEn = [
   { subject: "Technical", A: 90, fullMark: 100 },
   { subject: "Soft Skills", A: 65, fullMark: 100 },
   { subject: "Structure", A: 85, fullMark: 100 },
@@ -10,20 +20,14 @@ const dataEn = [
   { subject: "Relevance", A: 80, fullMark: 100 },
 ];
 
-const dataAr = [
-  { subject: "تقنية", A: 90, fullMark: 100 },
-  { subject: "مهارات ناعمة", A: 65, fullMark: 100 },
-  { subject: "الهيكلية", A: 85, fullMark: 100 },
-  { subject: "التأثير", A: 50, fullMark: 100 },
-  { subject: "الملاءمة", A: 80, fullMark: 100 },
-];
-
-export function SkillsRadar() {
+export function SkillsRadar({ data }: SkillsRadarProps) {
   const [isRtl, setIsRtl] = useState(false);
 
   useEffect(() => {
     setIsRtl(document.documentElement.dir === 'rtl');
   }, []);
+
+  const chartData = data || defaultDataEn;
 
   return (
     <Card className="h-full">
@@ -36,11 +40,11 @@ export function SkillsRadar() {
       <CardContent>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={isRtl ? dataAr : dataEn}>
+            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
               <PolarGrid stroke="hsl(var(--muted-foreground)/0.2)" />
               <PolarAngleAxis 
                 dataKey="subject" 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} 
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} 
               />
               <Radar
                 name="My Resume"

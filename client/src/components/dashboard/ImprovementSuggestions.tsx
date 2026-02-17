@@ -3,7 +3,20 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Sparkles, ArrowUpRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const suggestions = [
+interface Suggestion {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  descEn: string;
+  descAr: string;
+  impact: 'High' | 'Medium';
+}
+
+interface ImprovementSuggestionsProps {
+  data?: Suggestion[];
+}
+
+const defaultSuggestions: Suggestion[] = [
   {
     id: "item-1",
     titleEn: "Quantify your impact",
@@ -19,23 +32,17 @@ const suggestions = [
     descEn: "Use standard headers like 'Experience', 'Education', and 'Skills' instead of creative ones like 'My Journey' so ATS can parse them correctly.",
     descAr: "استخدم عناوين قياسية مثل 'الخبرة' و'التعليم' و'المهارات' بدلاً من العناوين الإبداعية مثل 'رحلتي' لكي يتمكن نظام ATS من قراءتها بشكل صحيح.",
     impact: "Medium"
-  },
-  {
-    id: "item-3",
-    titleEn: "Add Soft Skills",
-    titleAr: "إضافة المهارات الناعمة",
-    descEn: "You have strong technical keywords, but miss soft skills like 'Communication', 'Leadership', or 'Agile Methodology' which are present in the job description.",
-    descAr: "لديك كلمات مفتاحية تقنية قوية، لكنك تفتقد المهارات الناعمة مثل 'التواصل' أو 'القيادة' أو 'منهجية Agile' الموجودة في وصف الوظيفة.",
-    impact: "Medium"
   }
 ];
 
-export function ImprovementSuggestions() {
+export function ImprovementSuggestions({ data }: ImprovementSuggestionsProps) {
   const [isRtl, setIsRtl] = useState(false);
 
   useEffect(() => {
     setIsRtl(document.documentElement.dir === 'rtl');
   }, []);
+
+  const suggestions = data || defaultSuggestions;
 
   return (
     <Card className="h-full">

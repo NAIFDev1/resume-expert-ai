@@ -8,7 +8,11 @@ interface CheckItem {
   status: 'pass' | 'fail' | 'warn';
 }
 
-const checks: CheckItem[] = [
+interface ATSChecklistProps {
+  data?: CheckItem[];
+}
+
+const defaultChecks: CheckItem[] = [
   { labelEn: "File Format (PDF)", labelAr: "تنسيق الملف (PDF)", status: 'pass' },
   { labelEn: "Text Selectable", labelAr: "النص قابل للتحديد", status: 'pass' },
   { labelEn: "Contact Info Found", labelAr: "معلومات الاتصال موجودة", status: 'pass' },
@@ -17,19 +21,21 @@ const checks: CheckItem[] = [
   { labelEn: "Date Formatting", labelAr: "تنسيق التاريخ", status: 'fail' },
 ];
 
-export function ATSChecklist() {
+export function ATSChecklist({ data }: ATSChecklistProps) {
   const [isRtl, setIsRtl] = useState(false);
 
   useEffect(() => {
     setIsRtl(document.documentElement.dir === 'rtl');
   }, []);
 
+  const checks = data || defaultChecks;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {isRtl ? "توافق ATS" : "ATS Compatibility"}
-          <span className={`text-xs font-normal px-2 py-0.5 rounded-full ${isRtl ? 'bg-yellow-100 text-yellow-700' : 'bg-yellow-100 text-yellow-700'}`}>
+          <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700">
             {isRtl ? "تحذير" : "Warning"}
           </span>
         </CardTitle>
