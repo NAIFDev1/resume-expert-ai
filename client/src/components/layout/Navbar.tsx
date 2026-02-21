@@ -40,13 +40,6 @@ export function Navbar() {
           </a>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link href="/"><a className="hover:text-foreground transition-colors">{lang === "ar" ? "الرئيسية" : "Home"}</a></Link>
-          <Link href="/templates"><a className="hover:text-foreground transition-colors">{lang === "ar" ? "النماذج" : "Templates"}</a></Link>
-          <Link href="/analysis"><a className="hover:text-foreground transition-colors">{lang === "ar" ? "التحليل" : "Analysis"}</a></Link>
-          <a href="#features" className="hover:text-foreground transition-colors">{lang === "ar" ? "المميزات" : "Features"}</a>
-        </nav>
-
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
