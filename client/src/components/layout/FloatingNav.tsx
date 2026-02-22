@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, FileText, BarChart2, Layout, Settings, User } from "lucide-react";
+import { Home, FileText, BarChart2, Layout, Settings, User, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -21,6 +21,7 @@ export function FloatingNav() {
     { href: "/", icon: Home, labelAr: "الرئيسية", labelEn: "Home" },
     { href: "/analysis", icon: BarChart2, labelAr: "التحليل", labelEn: "Analysis" },
     { href: "/templates", icon: Layout, labelAr: "النماذج", labelEn: "Templates" },
+    { href: "/faq", icon: HelpCircle, labelAr: "الأسئلة", labelEn: "FAQ" },
     { href: "/auth", icon: User, labelAr: "حسابي", labelEn: "Profile" },
   ];
 

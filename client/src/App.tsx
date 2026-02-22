@@ -10,6 +10,7 @@ import Home from "@/pages/Home";
 import Analysis from "@/pages/Analysis";
 import Auth from "@/pages/Auth";
 import Templates from "@/pages/Templates";
+import FAQ from "@/pages/FAQ";
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/analysis" component={Analysis} />
       <Route path="/templates" component={Templates} />
+      <Route path="/faq" component={FAQ} />
       <Route path="/login" component={Auth} />
       <Route path="/register" component={Auth} />
       <Route component={NotFound} />
