@@ -11,6 +11,7 @@ import Analysis from "@/pages/Analysis";
 import Auth from "@/pages/Auth";
 import Templates from "@/pages/Templates";
 import FAQ from "@/pages/FAQ";
+import Editor from "@/pages/Editor";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/analysis" component={Analysis} />
       <Route path="/templates" component={Templates} />
+      <Route path="/editor" component={Editor} />
       <Route path="/faq" component={FAQ} />
       <Route path="/login" component={Auth} />
       <Route path="/register" component={Auth} />

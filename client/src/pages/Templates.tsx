@@ -119,8 +119,10 @@ export default function Templates() {
                     <Eye className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
                     {isRtl ? "معاينة" : "Preview"}
                   </Button>
-                  <Button className="w-full">
-                    {isRtl ? "استخدام" : "Use This"}
+                  <Button className="w-full" asChild>
+                    <Link href="/editor">
+                      {isRtl ? "استخدام" : "Use This"}
+                    </Link>
                   </Button>
                 </CardFooter>
               </Card>
