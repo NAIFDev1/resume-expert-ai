@@ -120,7 +120,7 @@ export default function Templates() {
                     {isRtl ? "معاينة" : "Preview"}
                   </Button>
                   <Button className="w-full" asChild>
-                    <Link href="/editor">
+                    <Link href={`/editor?template=${template.id}`}>
                       {isRtl ? "استخدام" : "Use This"}
                     </Link>
                   </Button>
