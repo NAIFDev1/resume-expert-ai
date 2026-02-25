@@ -16,9 +16,15 @@ import {
   Award,
   Star,
   Target,
-  FileCheck
+  FileCheck,
+  Upload,
+  File,
+  X,
+  Loader2
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useLocation } from "wouter";
+import { Progress } from "@/components/ui/progress";
 
 const stats = [
   { id: 1, labelEn: "Total Visitors", labelAr: "إجمالي الزيارات", value: "1.2M+", icon: Eye, color: "text-blue-500" },
@@ -34,7 +40,59 @@ const testimonials = [
 
 export default function Home() {
   const [isRtl, setIsRtl] = useState(false);
+  const [, setLocation] = useLocation();
+  const [dragActive, setDragActive] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef(null);
+
+  const handleUpload = useCallback((file: File) => {
+    setSelectedFile(file);
+    setUploading(true);
+    setUploadProgress(0);
+
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setLocation("/analysis");
+          }, 500);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 100);
+  }, [setLocation]);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleUpload(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      handleUpload(e.target.files[0]);
+    }
+  };
 
   useEffect(() => {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
@@ -82,17 +140,101 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" className="h-14 px-8 text-lg rounded-2xl shadow-xl shadow-primary/20 group" asChild>
-                <Link href="/analysis">
-                  {isRtl ? "ابدأ التحليل الآن" : "Start Analysis Now"}
-                  <ArrowRight className={`h-5 w-5 transition-transform group-hover:translate-x-1 ${isRtl ? 'rotate-180 mr-2' : 'ml-2'}`} />
-                </Link>
+              <Button size="lg" className="h-14 px-8 text-lg rounded-2xl shadow-xl shadow-primary/20 group" onClick={() => fileInputRef.current?.click()}>
+                <Upload className={`h-5 w-5 ${isRtl ? 'ml-2' : 'mr-2'}`} />
+                {isRtl ? "ارفع سيرتك الذاتية" : "Upload Your Resume"}
               </Button>
               <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-2xl backdrop-blur-md border-primary/20 hover:bg-primary/5" asChild>
                 <Link href="/templates">
                   {isRtl ? "استكشف النماذج" : "Explore Templates"}
                 </Link>
               </Button>
+            </div>
+
+            {/* Drag & Drop Zone */}
+            <div className="max-w-3xl mx-auto mt-16">
+              <div 
+                className={`relative group rounded-[2.5rem] border-2 border-dashed transition-all duration-300 p-12 bg-card/30 backdrop-blur-sm ${
+                  dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-primary/20 hover:border-primary/40"
+                } ${uploading ? "pointer-events-none" : ""}`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleChange}
+                />
+
+                <AnimatePresence mode="wait">
+                  {uploading ? (
+                    <motion.div 
+                      key="uploading"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="space-y-6"
+                    >
+                      <div className="flex flex-col items-center">
+                        <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+                        <h3 className="text-xl font-bold mb-2">
+                          {isRtl ? "جاري التحليل..." : "Analyzing..."}
+                        </h3>
+                        <p className="text-muted-foreground mb-6">
+                          {selectedFile?.name}
+                        </p>
+                      </div>
+                      <div className="w-full max-w-md mx-auto space-y-2">
+                        <Progress value={uploadProgress} className="h-2" />
+                        <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                          <span>{uploadProgress}%</span>
+                          <span>{isRtl ? "جارٍ الفحص الذكي" : "Smart Scanning"}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div 
+                      key="idle"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex flex-col items-center text-center"
+                    >
+                      <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <Upload className="h-10 w-10 text-primary" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3">
+                        {isRtl ? "اسحب وأفلت ملفك هنا" : "Drag & drop your file here"}
+                      </h3>
+                      <p className="text-muted-foreground mb-8 max-w-sm">
+                        {isRtl 
+                          ? "يدعم ملفات PDF و Word. سيتم تحليل بياناتك بأمان تام."
+                          : "Supports PDF and Word files. Your data will be analyzed securely."}
+                      </p>
+                      <Button variant="secondary" className="rounded-xl px-8" onClick={() => fileInputRef.current?.click()}>
+                        {isRtl ? "اختيار ملف" : "Choose File"}
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <div className="mt-8 flex justify-center items-center gap-8 text-sm text-muted-foreground font-medium">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  {isRtl ? "فحص ATS كامل" : "Full ATS Scan"}
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  {isRtl ? "خصوصية مضمونة" : "Privacy Guaranteed"}
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  {isRtl ? "تحليل بذكاء 2026" : "2026 AI Analysis"}
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
