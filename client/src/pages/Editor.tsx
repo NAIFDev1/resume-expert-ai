@@ -303,7 +303,8 @@ export default function Editor() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
+    </main>
       
       <style dangerouslySetInnerHTML={{ __html: `
         .custom-scrollbar::-webkit-scrollbar {
