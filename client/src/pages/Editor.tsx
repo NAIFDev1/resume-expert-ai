@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReactToPrint } from "react-to-print";
 
 export default function Editor() {
   const [isRtl, setIsRtl] = useState(false);
   const { toast } = useToast();
   const [activeTemplate, setActiveTemplate] = useState("classic");
+  const componentRef = useRef<HTMLDivElement>(null);
   const [resumeData, setResumeData] = useState({
     fullName: "أحمد محمد",
     jobTitle: "مطور برمجيات",
@@ -50,6 +52,11 @@ export default function Editor() {
       description: isRtl ? "تم حفظ التغييرات بنجاح" : "Changes saved successfully",
     });
   };
+
+  const handlePrint = useReactToPrint({
+    contentRef: componentRef,
+    documentTitle: `Resume_${resumeData.fullName}`,
+  });
 
   const templates = [
     { id: "classic", name: isRtl ? "كلاسيكي" : "Classic" },
@@ -163,7 +170,7 @@ export default function Editor() {
                       <Save className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
                       {isRtl ? "حفظ السيرة" : "Save Resume"}
                     </Button>
-                    <Button variant="outline" className="flex-1 h-12 rounded-xl border-primary/20 hover:bg-primary/5">
+                    <Button onClick={() => handlePrint()} variant="outline" className="flex-1 h-12 rounded-xl border-primary/20 hover:bg-primary/5">
                       <Download className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
                       {isRtl ? "تحميل PDF" : "Download PDF"}
                     </Button>
@@ -186,9 +193,10 @@ export default function Editor() {
             </div>
             
             <div className="flex-1 bg-muted/30 rounded-2xl p-4 md:p-8 overflow-y-auto border shadow-inner custom-scrollbar">
-              <Card className={`bg-white text-slate-900 shadow-2xl min-h-[842px] w-full max-w-[595px] mx-auto transition-all duration-300 transform origin-top ${
-                activeTemplate === 'modern' ? 'p-0 flex overflow-hidden' : 'p-12'
-              } ${activeTemplate === 'minimal' ? 'font-sans border-t-8 border-primary' : 'font-serif'}`}>
+              <div ref={componentRef}>
+                <Card className={`bg-white text-slate-900 shadow-2xl min-h-[842px] w-full max-w-[595px] mx-auto transition-all duration-300 transform origin-top ${
+                  activeTemplate === 'modern' ? 'p-0 flex overflow-hidden' : 'p-12'
+                } ${activeTemplate === 'minimal' ? 'font-sans border-t-8 border-primary' : 'font-serif'}`}>
                 
                 {activeTemplate === 'classic' && (
                   <>
