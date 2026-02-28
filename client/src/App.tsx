@@ -12,12 +12,14 @@ import Auth from "@/pages/Auth";
 import Templates from "@/pages/Templates";
 import FAQ from "@/pages/FAQ";
 import Editor from "@/pages/Editor";
+import Dashboard from "@/pages/Dashboard";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/analysis" component={Analysis} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/templates" component={Templates} />
       <Route path="/editor" component={Editor} />
       <Route path="/faq" component={FAQ} />

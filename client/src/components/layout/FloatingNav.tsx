@@ -21,7 +21,8 @@ export function FloatingNav() {
     { href: "/", icon: Home, labelAr: "الرئيسية", labelEn: "Home" },
     { href: "/analysis", icon: BarChart2, labelAr: "التحليل", labelEn: "Analysis" },
     { href: "/editor", icon: FileText, labelAr: "المحرر", labelEn: "Editor" },
-    { href: "/templates", icon: Layout, labelAr: "النماذج", labelEn: "Templates" },
+    { href: "/dashboard", icon: Layout, labelAr: "لوحتي", labelEn: "Dashboard" },
+    { href: "/templates", icon: Settings, labelAr: "النماذج", labelEn: "Templates" },
     { href: "/faq", icon: HelpCircle, labelAr: "الأسئلة", labelEn: "FAQ" },
     { href: "/auth", icon: User, labelAr: "حسابي", labelEn: "Profile" },
   ];
