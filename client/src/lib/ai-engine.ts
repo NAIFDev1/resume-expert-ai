@@ -9,32 +9,41 @@ export interface AnalysisResult {
   score: number;
   summaryEn: string;
   summaryAr: string;
-  skills: { subject: string; A: number; fullMark: number }[];
+  matchRate?: number;
+  skills: { subject: string; A: number; fullMark: number; match?: boolean }[];
   checks: { labelEn: string; labelAr: string; status: 'pass' | 'fail' | 'warn' }[];
   suggestions: { id: string; titleEn: string; titleAr: string; descEn: string; descAr: string; impact: 'High' | 'Medium' }[];
 }
 
-export const analyzeResume = (fileName: string): AnalysisResult => {
+export const analyzeResume = (fileName: string, jobDescription?: string): AnalysisResult => {
   // Mocking the analysis based on "AI parsing"
   // In a real app, this would be a backend API call
   
+  const score = jobDescription ? 76 : 82;
+  const matchRate = jobDescription ? Math.floor(Math.random() * 25) + 65 : undefined;
+
   return {
-    score: 82,
-    summaryEn: "Your resume shows great potential in technical fields. The structure is clear, but you could improve by adding more quantifiable achievements and specific industry keywords.",
-    summaryAr: "تظهر سيرتك الذاتية إمكانات كبيرة في المجالات التقنية. الهيكلية واضحة، ولكن يمكنك التحسين من خلال إضافة المزيد من الإنجازات القابلة للقياس والكلمات المفتاحية المتخصصة في المجال.",
+    score,
+    matchRate,
+    summaryEn: jobDescription 
+      ? "Your resume has a good match with the job description, but lacks some specific industry terms. We recommend adding the highlighted missing keywords."
+      : "Your resume shows great potential in technical fields. The structure is clear, but you could improve by adding more quantifiable achievements and specific industry keywords.",
+    summaryAr: jobDescription
+      ? "تتمتع سيرتك الذاتية بمطابقة جيدة مع الوصف الوظيفي، ولكنها تفتقر إلى بعض المصطلحات المتخصصة. نوصي بإضافة الكلمات المفتاحية المفقودة الموضحة."
+      : "تظهر سيرتك الذاتية إمكانات كبيرة في المجالات التقنية. الهيكلية واضحة، ولكن يمكنك التحسين من خلال إضافة المزيد من الإنجازات القابلة للقياس والكلمات المفتاحية المتخصصة في المجال.",
     skills: [
-      { subject: "Technical / تقني", A: 85, fullMark: 100 },
-      { subject: "Soft Skills / مهارات ناعمة", A: 70, fullMark: 100 },
-      { subject: "Structure / الهيكلية", A: 90, fullMark: 100 },
-      { subject: "Impact / التأثير", A: 60, fullMark: 100 },
-      { subject: "Relevance / الملاءمة", A: 75, fullMark: 100 },
+      { subject: "Technical / تقني", A: 85, fullMark: 100, match: true },
+      { subject: "Soft Skills / مهارات ناعمة", A: 70, fullMark: 100, match: true },
+      { subject: "Structure / الهيكلية", A: 90, fullMark: 100, match: true },
+      { subject: "Impact / التأثير", A: 60, fullMark: 100, match: jobDescription ? false : true },
+      { subject: "Relevance / الملاءمة", A: 75, fullMark: 100, match: true },
     ],
     checks: [
       { labelEn: "File Format (PDF)", labelAr: "تنسيق الملف (PDF)", status: 'pass' },
       { labelEn: "Text Selectable", labelAr: "النص قابل للتحديد", status: 'pass' },
       { labelEn: "Contact Info Found", labelAr: "معلومات الاتصال موجودة", status: 'pass' },
       { labelEn: "Section Headers", labelAr: "عناوين الأقسام", status: 'pass' },
-      { labelEn: "No Graphics/Tables", labelAr: "لا توجد رسومات/جداول", status: 'warn' },
+      { labelEn: "Job Match Keywords", labelAr: "كلمات مطابقة الوظيفة", status: jobDescription ? 'warn' : 'pass' },
       { labelEn: "Date Formatting", labelAr: "تنسيق التاريخ", status: 'pass' },
     ],
     suggestions: [
@@ -48,10 +57,14 @@ export const analyzeResume = (fileName: string): AnalysisResult => {
       },
       {
         id: "s-2",
-        titleEn: "Industry Keywords",
-        titleAr: "الكلمات المفتاحية للمجال",
-        descEn: "Add more specific keywords found in the job description to pass ATS filters more effectively.",
-        descAr: "أضف المزيد من الكلمات المفتاحية المحددة الموجودة في وصف الوظيفة لتجاوز فلاتر ATS بفعالية أكبر.",
+        titleEn: jobDescription ? "Missing Keywords Found" : "Industry Keywords",
+        titleAr: jobDescription ? "كلمات مفتاحية مفقودة" : "الكلمات المفتاحية للمجال",
+        descEn: jobDescription 
+          ? "The job description mentions 'Cloud Architecture' and 'CI/CD' which are missing from your resume."
+          : "Add more specific keywords found in the job description to pass ATS filters more effectively.",
+        descAr: jobDescription
+          ? "يذكر الوصف الوظيفي 'Cloud Architecture' و 'CI/CD' وهي مفقودة في سيرتك الذاتية."
+          : "أضف المزيد من الكلمات المفتاحية المحددة الموجودة في وصف الوظيفة لتجاوز فلاتر ATS بفعالية أكبر.",
         impact: "High"
       }
     ]

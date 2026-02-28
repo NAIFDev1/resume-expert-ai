@@ -18,9 +18,13 @@ export default function Analysis() {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
     checkLang();
     
+    // Get JD from URL
+    const params = new URLSearchParams(window.location.search);
+    const jd = params.get('jd');
+
     // Simulate deep AI analysis
     const timer = setTimeout(() => {
-      setResult(analyzeResume("resume_v2.pdf"));
+      setResult(analyzeResume("resume_v2.pdf", jd || undefined));
       setIsLoading(false);
     }, 2000);
 
@@ -116,13 +120,28 @@ export default function Analysis() {
                 <p className="text-xs text-muted-foreground">{isRtl ? "تم الفحص بواسطة محرك خبير" : "Verified by Khabir Engine"}</p>
               </div>
 
-              <div className="md:col-span-3 bg-card rounded-2xl border p-6 shadow-sm flex flex-col justify-center">
+              <div className="md:col-span-2 bg-card rounded-2xl border p-6 shadow-sm flex flex-col justify-center">
                  <h3 className="text-lg font-semibold mb-2">
                    {isRtl ? "الملخص الذكي" : "AI Executive Summary"}
                  </h3>
                  <p className="text-muted-foreground leading-relaxed">
                    {isRtl ? result?.summaryAr : result?.summaryEn}
                  </p>
+              </div>
+
+              <div className="md:col-span-1 bg-primary text-primary-foreground rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center text-center relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+                <div className="relative z-10">
+                  <span className="text-5xl font-black mb-2 block tracking-tighter">
+                    {result?.matchRate || "--"}%
+                  </span>
+                  <span className="text-sm font-bold uppercase tracking-widest opacity-90">
+                    {isRtl ? "نسبة المطابقة" : "Match Rate"}
+                  </span>
+                  <p className="text-[10px] mt-4 opacity-75 font-medium uppercase tracking-tighter">
+                    {isRtl ? "مقارنة بالوصف الوظيفي" : "vs. Job Description"}
+                  </p>
+                </div>
               </div>
             </div>
 

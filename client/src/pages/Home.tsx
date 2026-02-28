@@ -25,6 +25,7 @@ import {
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 
 const stats = [
   { id: 1, labelEn: "Total Visitors", labelAr: "إجمالي الزيارات", value: "1.2M+", icon: Eye, color: "text-blue-500" },
@@ -45,6 +46,7 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [jobDescription, setJobDescription] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef(null);
 
@@ -59,14 +61,14 @@ export default function Home() {
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
-            setLocation("/analysis");
+            setLocation(`/analysis?jd=${encodeURIComponent(jobDescription)}`);
           }, 500);
           return 100;
         }
         return prev + 5;
       });
     }, 100);
-  }, [setLocation]);
+  }, [setLocation, jobDescription]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -152,7 +154,22 @@ export default function Home() {
             </div>
 
             {/* Drag & Drop Zone */}
-            <div className="max-w-3xl mx-auto mt-16">
+            <div className="max-w-3xl mx-auto mt-16 space-y-8">
+              {!uploading && (
+                <div className="space-y-4 text-right" dir={isRtl ? "rtl" : "ltr"}>
+                  <label className="text-lg font-bold block">
+                    {isRtl ? "اختياري: الصق الوصف الوظيفي للمقارنة" : "Optional: Paste Job Description for Comparison"}
+                  </label>
+                  <Textarea 
+                    placeholder={isRtl ? "مثلاً: مطلوب مطور ويب بمهارات React و Node.js..." : "e.g., Looking for a Web Developer with React and Node.js skills..."}
+                    className="min-h-[120px] rounded-2xl bg-card/50 backdrop-blur-sm border-primary/20 focus:border-primary/50 transition-all text-right"
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    dir={isRtl ? "rtl" : "ltr"}
+                  />
+                </div>
+              )}
+
               <div 
                 className={`relative group rounded-[2.5rem] border-2 border-dashed transition-all duration-300 p-12 bg-card/30 backdrop-blur-sm ${
                   dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-primary/20 hover:border-primary/40"
