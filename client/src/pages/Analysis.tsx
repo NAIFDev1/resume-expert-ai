@@ -6,13 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Download, Share2, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { analyzeResume, AnalysisResult } from "@/lib/ai-engine";
+import { useReactToPrint } from "react-to-print";
 
 export default function Analysis() {
   const [isRtl, setIsRtl] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useReactToPrint({
+    contentRef: reportRef,
+    documentTitle: `Khabir_Analysis_Report`,
+  });
 
   useEffect(() => {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
@@ -92,14 +99,20 @@ export default function Analysis() {
                   <Share2 className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} /> 
                   {isRtl ? "مشاركة" : "Share"}
                 </Button>
-                <Button size="sm">
+                <Button size="sm" onClick={() => handlePrint()}>
                   <Download className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} /> 
                   {isRtl ? "تحميل التقرير" : "Download Report"}
                 </Button>
               </div>
             </div>
 
-            {/* Overview Cards */}
+            <div ref={reportRef} className="print:p-8 print:bg-white">
+              <div className="hidden print:block mb-8 text-center border-b pb-4">
+                <h1 className="text-2xl font-bold text-primary">خبير / Khabir AI</h1>
+                <p className="text-sm text-muted-foreground">تقرير تحليل السيرة الذاتية الذكي</p>
+              </div>
+
+              {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <div className="md:col-span-1 bg-card rounded-2xl border p-6 flex flex-col items-center justify-center text-center shadow-sm">
                 <div className="relative h-32 w-32 flex items-center justify-center mb-4">
@@ -169,6 +182,7 @@ export default function Analysis() {
               <div className="lg:col-span-1">
                 <ImprovementSuggestions data={result?.suggestions} />
               </div>
+            </div>
             </div>
           </motion.div>
         </AnimatePresence>
