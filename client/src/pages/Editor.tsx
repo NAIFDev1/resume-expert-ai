@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout } from "lucide-react";
+import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout, Wand2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReactToPrint } from "react-to-print";
@@ -15,6 +15,7 @@ export default function Editor() {
   const { toast } = useToast();
   const [activeTemplate, setActiveTemplate] = useState("classic");
   const componentRef = useRef<HTMLDivElement>(null);
+  const [isImproving, setIsImproving] = useState(false);
   const [resumeData, setResumeData] = useState({
     fullName: "أحمد محمد",
     jobTitle: "مطور برمجيات",
@@ -24,6 +25,26 @@ export default function Editor() {
     experience: "• مطور واجهات أمامية في شركة تقنية (2022 - الحالي)\n• تطوير تطبيقات باستخدام React و Tailwind CSS\n• تحسين أداء المواقع بنسبة 30%",
     education: "بكالوريوس علوم الحاسب - جامعة الملك سعود (2021)",
   });
+
+  const improveContent = () => {
+    setIsImproving(true);
+    setTimeout(() => {
+      setResumeData(prev => ({
+        ...prev,
+        summary: isRtl 
+          ? "خبير في تطوير البرمجيات بخلفية قوية في بناء حلول ويب متكاملة، متميز في تحسين تجربة المستخدم وتحقيق أعلى معايير الأداء والجودة."
+          : "Senior Software Engineer with a proven track record of architecting scalable web solutions, specializing in UX optimization and high-performance system delivery.",
+        experience: isRtl
+          ? "• مهندس برمجيات أول (2022 - الحالي)\n• قيادة وتطوير منصات ويب معقدة باستخدام React و Node.js مع ضمان توافقية الأنظمة.\n• تحقيق قفزة نوعية في أداء التطبيقات بنسبة 35٪ من خلال تحسين هيكلية الكود البرمجي."
+          : "• Senior Software Engineer (2022 - Present)\n• Spearheaded the development of complex web platforms using React/Node.js ecosystem.\n• Engineered performance optimizations resulting in a 35% reduction in page load times."
+      }));
+      setIsImproving(false);
+      toast({
+        title: isRtl ? "تم التحسين بالسحر!" : "Magic Improvement Done!",
+        description: isRtl ? "قام الذكاء الاصطناعي بإعادة صياغة سيرتك الذاتية باحترافية." : "AI has professionally rewritten your resume content.",
+      });
+    }, 1500);
+  };
 
   useEffect(() => {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
@@ -78,6 +99,16 @@ export default function Editor() {
                     <Sparkles className="h-5 w-5 text-primary" />
                     {isRtl ? "محرر خبير الذكي" : "Khabir Smart Editor"}
                   </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="rounded-xl border-primary/20 hover:bg-primary/10 text-primary gap-2"
+                    onClick={improveContent}
+                    disabled={isImproving}
+                  >
+                    {isImproving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                    {isRtl ? "تحسين بالذكاء" : "AI Improve"}
+                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
