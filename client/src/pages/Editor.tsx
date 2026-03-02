@@ -280,7 +280,7 @@ export default function Editor() {
                 } ${activeTemplate === 'minimal' ? 'font-sans border-t-8 border-primary' : 'font-serif'}`}>
                 
                 {activeTemplate === 'classic' && (
-                  <>
+                  <div className="space-y-8 text-left h-full" dir="ltr">
                     <header className="border-b-2 border-slate-900 pb-6 mb-8 text-center">
                       <h1 className="text-4xl font-bold uppercase tracking-widest text-slate-900 mb-2">{resumeData.fullName}</h1>
                       <p className="text-primary font-medium tracking-wide text-lg mb-4">{resumeData.jobTitle}</p>
@@ -289,33 +289,33 @@ export default function Editor() {
                         <span className="flex items-center gap-1">📞 {resumeData.phone}</span>
                       </div>
                     </header>
-                    <div className="space-y-8 text-left" dir="ltr">
+                    <div className="space-y-8">
                       <ResumeSections data={resumeData} />
                     </div>
-                  </>
+                  </div>
                 )}
 
                 {activeTemplate === 'modern' && (
-                  <>
+                  <div className="flex h-full min-h-[842px]" dir="ltr">
                     <div className="w-1/3 bg-slate-900 text-white p-8">
-                      <div className="w-24 h-24 bg-primary/20 rounded-full mb-8 flex items-center justify-center text-3xl font-bold border-2 border-primary/50">
+                      <div className="w-24 h-24 bg-primary/20 rounded-full mb-8 flex items-center justify-center text-3xl font-bold border-2 border-primary/50 mx-auto">
                         {resumeData.fullName.charAt(0)}
                       </div>
                       <div className="space-y-6">
                         <section>
                           <h3 className="text-xs font-bold uppercase text-primary mb-4 tracking-wider">Contact</h3>
                           <div className="text-[11px] space-y-2 text-slate-300">
-                            <p>✉ {resumeData.email}</p>
+                            <p className="break-all">✉ {resumeData.email}</p>
                             <p>📞 {resumeData.phone}</p>
                           </div>
                         </section>
                         <section>
                           <h3 className="text-xs font-bold uppercase text-primary mb-4 tracking-wider">Education</h3>
-                          <p className="text-[11px] text-slate-300 leading-relaxed">{resumeData.education}</p>
+                          <p className="text-[11px] text-slate-300 leading-relaxed whitespace-pre-line">{resumeData.education}</p>
                         </section>
                       </div>
                     </div>
-                    <div className="flex-1 p-10 text-left" dir="ltr">
+                    <div className="flex-1 p-10 text-left bg-white">
                       <header className="mb-10">
                         <h1 className="text-4xl font-bold text-slate-900 mb-1">{resumeData.fullName}</h1>
                         <p className="text-xl text-primary font-medium">{resumeData.jobTitle}</p>
@@ -333,14 +333,14 @@ export default function Editor() {
                         </section>
                       </div>
                     </div>
-                  </>
+                  </div>
                 )}
 
                 {activeTemplate === 'minimal' && (
-                  <div className="space-y-10 text-left" dir="ltr">
+                  <div className="space-y-10 text-left h-full p-12" dir="ltr">
                     <header>
                       <h1 className="text-5xl font-black text-slate-900 mb-4 tracking-tighter">{resumeData.fullName}</h1>
-                      <div className="flex gap-4 text-sm font-medium text-primary">
+                      <div className="flex flex-wrap gap-4 text-sm font-medium text-primary">
                         <span>{resumeData.jobTitle}</span>
                         <span className="text-slate-300">•</span>
                         <span>{resumeData.email}</span>
@@ -369,7 +369,7 @@ export default function Editor() {
                         <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Study</h2>
                       </div>
                       <div className="col-span-3">
-                        <p className="text-sm leading-relaxed text-slate-600">{resumeData.education}</p>
+                        <p className="text-sm leading-relaxed text-slate-600 whitespace-pre-line">{resumeData.education}</p>
                       </div>
                     </div>
                   </div>
