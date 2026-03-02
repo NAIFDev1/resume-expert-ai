@@ -49,23 +49,31 @@ export const analyzeResume = (fileName: string, jobDescription?: string): Analys
     suggestions: [
       {
         id: "s-1",
-        titleEn: "Use Action Verbs",
-        titleAr: "استخدم أفعال الحركة",
-        descEn: "Start your bullet points with strong action verbs like 'Developed', 'Led', or 'Optimized' to show initiative.",
-        descAr: "ابدأ نقاط خبرتك بأفعال حركة قوية مثل 'طورت'، 'قدت'، أو 'حسنت' لإظهار المبادرة.",
+        titleEn: "Quantify Your Impact",
+        titleAr: "جعل الإنجازات قابلة للقياس",
+        descEn: "Resumes with metrics (e.g., 'Increased sales by 20%') are 40% more likely to be hired. Add numbers to your bullet points.",
+        descAr: "السير الذاتية التي تحتوي على أرقام (مثلاً: 'زيادة المبيعات بنسبة 20٪') تزيد فرص قبولها بنسبة 40٪. أضف أرقاماً لنقاط خبرتك.",
         impact: "High"
       },
       {
         id: "s-2",
-        titleEn: jobDescription ? "Missing Keywords Found" : "Industry Keywords",
-        titleAr: jobDescription ? "كلمات مفتاحية مفقودة" : "الكلمات المفتاحية للمجال",
+        titleEn: jobDescription ? "Keyword Gap Detected" : "Semantic Keyword Optimization",
+        titleAr: jobDescription ? "فجوة في الكلمات المفتاحية" : "تحسين الكلمات المفتاحية الدلالية",
         descEn: jobDescription 
-          ? "The job description mentions 'Cloud Architecture' and 'CI/CD' which are missing from your resume."
-          : "Add more specific keywords found in the job description to pass ATS filters more effectively.",
+          ? `Your resume is missing critical terms from the JD: '${jobDescription.split(' ').slice(0,3).join(', ')}'. Incorporate these naturally.`
+          : "Modern ATS use semantic search. Instead of just listing skills, use them in context within your experience descriptions.",
         descAr: jobDescription
-          ? "يذكر الوصف الوظيفي 'Cloud Architecture' و 'CI/CD' وهي مفقودة في سيرتك الذاتية."
-          : "أضف المزيد من الكلمات المفتاحية المحددة الموجودة في وصف الوظيفة لتجاوز فلاتر ATS بفعالية أكبر.",
+          ? `سيرتك الذاتية تفتقد لمصطلحات جوهرية من الوصف الوظيفي: '${jobDescription.split(' ').slice(0,3).join(', ')}'. أدرجها بشكل طبيعي.`
+          : "تستخدم أنظمة ATS الحديثة البحث الدلالي. بدلاً من مجرد سرد المهارات، استخدمها سياقياً ضمن وصف خبراتك.",
         impact: "High"
+      },
+      {
+        id: "s-3",
+        titleEn: "Improve Verb Strength",
+        titleAr: "تحسين قوة الأفعال",
+        descEn: "Replace passive words like 'Responsible for' with active verbs like 'Spearheaded', 'Orchestrated', or 'Executed'.",
+        descAr: "استبدل الكلمات الضعيفة مثل 'مسؤول عن' بأفعال قوية مثل 'قاد'، 'نسق'، أو 'نفذ'.",
+        impact: "Medium"
       }
     ]
   };
