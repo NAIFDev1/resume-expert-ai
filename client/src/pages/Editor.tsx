@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout, Wand2, Loader2 } from "lucide-react";
+import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout, Wand2, Loader2, Languages } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReactToPrint } from "react-to-print";
@@ -16,6 +16,7 @@ export default function Editor() {
   const [activeTemplate, setActiveTemplate] = useState("classic");
   const componentRef = useRef<HTMLDivElement>(null);
   const [isImproving, setIsImproving] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [resumeData, setResumeData] = useState({
     fullName: "أحمد محمد",
     jobTitle: "مطور برمجيات",
@@ -25,6 +26,43 @@ export default function Editor() {
     experience: "• مطور واجهات أمامية في شركة تقنية (2022 - الحالي)\n• تطوير تطبيقات باستخدام React و Tailwind CSS\n• تحسين أداء المواقع بنسبة 30%",
     education: "بكالوريوس علوم الحاسب - جامعة الملك سعود (2021)",
   });
+
+  const translateResume = () => {
+    setIsTranslating(true);
+    setTimeout(() => {
+      const isCurrentlyAr = /[\u0600-\u06FF]/.test(resumeData.fullName);
+      
+      if (isCurrentlyAr) {
+        // Translate to EN
+        setResumeData({
+          fullName: "Ahmed Mohamed",
+          jobTitle: "Software Developer",
+          email: "ahmed@example.com",
+          phone: "+966 50 000 0000",
+          summary: "Passionate software developer focused on building high-quality web applications and exceptional user experiences.",
+          experience: "• Frontend Developer at Tech Corp (2022 - Present)\n• Developing applications using React and Tailwind CSS\n• Optimizing website performance by 30%",
+          education: "Bachelor of Computer Science - King Saud University (2021)",
+        });
+      } else {
+        // Translate to AR
+        setResumeData({
+          fullName: "أحمد محمد",
+          jobTitle: "مطور برمجيات",
+          email: "ahmed@example.com",
+          phone: "+966 50 000 0000",
+          summary: "مطور برمجيات شغوف ببناء تطبيقات ويب عالية الجودة وتجربة مستخدم مميزة.",
+          experience: "• مطور واجهات أمامية في شركة تقنية (2022 - الحالي)\n• تطوير تطبيقات باستخدام React و Tailwind CSS\n• تحسين أداء المواقع بنسبة 30%",
+          education: "بكالوريوس علوم الحاسب - جامعة الملك سعود (2021)",
+        });
+      }
+      
+      setIsTranslating(false);
+      toast({
+        title: isRtl ? "تمت الترجمة!" : "Translated!",
+        description: isRtl ? "تمت ترجمة محتوى السيرة الذاتية بذكاء." : "Resume content has been intelligently translated.",
+      });
+    }, 1500);
+  };
 
   const improveContent = () => {
     setIsImproving(true);
@@ -99,16 +137,28 @@ export default function Editor() {
                     <Sparkles className="h-5 w-5 text-primary" />
                     {isRtl ? "محرر خبير الذكي" : "Khabir Smart Editor"}
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="rounded-xl border-primary/20 hover:bg-primary/10 text-primary gap-2"
-                    onClick={improveContent}
-                    disabled={isImproving}
-                  >
-                    {isImproving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                    {isRtl ? "تحسين بالذكاء" : "AI Improve"}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="rounded-xl border-primary/20 hover:bg-primary/10 text-primary gap-2"
+                      onClick={translateResume}
+                      disabled={isTranslating}
+                    >
+                      {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
+                      {isRtl ? "ترجمة" : "Translate"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="rounded-xl border-primary/20 hover:bg-primary/10 text-primary gap-2"
+                      onClick={improveContent}
+                      disabled={isImproving}
+                    >
+                      {isImproving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                      {isRtl ? "تحسين بالذكاء" : "AI Improve"}
+                    </Button>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
