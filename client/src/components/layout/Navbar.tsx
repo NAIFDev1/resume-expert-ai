@@ -32,10 +32,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/">
-          <a className="flex items-center gap-2 font-heading font-bold text-xl text-primary tracking-tight">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <FileText className="h-5 w-5" />
-            </div>
+          <a className="font-heading font-bold text-2xl text-primary tracking-tighter">
             {lang === "ar" ? "خبير" : "Khabir"}
           </a>
         </Link>
