@@ -32,8 +32,10 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/">
-          <a className="font-heading text-2xl tracking-tighter text-left text-[#000000] font-black">
-            {lang === "ar" ? "خبير" : "Khabir"}
+          <a className="font-heading text-2xl tracking-tighter flex items-center gap-0.5 group">
+            <span className="font-black text-primary transition-transform group-hover:scale-105 duration-300">خبير</span>
+            <span className="text-primary/30 font-bold group-hover:text-primary/60 transition-colors">.ai</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse mt-3 shadow-[0_0_10px_rgba(249,115,22,0.6)]" />
           </a>
         </Link>
 
