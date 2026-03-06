@@ -16,38 +16,33 @@ export interface AnalysisResult {
 }
 
 export const analyzeResume = (fileName: string, jobDescription?: string): AnalysisResult => {
-  const isVideoFile = fileName.toLowerCase().endsWith('.mp4') || 
-                      fileName.toLowerCase().endsWith('.mov') || 
-                      fileName.toLowerCase().endsWith('.avi') ||
-                      fileName.toLowerCase().includes('video') ||
-                      fileName.toLowerCase().includes('movie');
+  const isNotResume = !fileName.toLowerCase().endsWith('.pdf') && 
+                      !fileName.toLowerCase().endsWith('.doc') && 
+                      !fileName.toLowerCase().endsWith('.docx');
 
-  if (isVideoFile) {
+  if (isNotResume) {
     return {
-      score: 12,
+      score: 0,
       matchRate: 0,
-      summaryEn: "Critical Error: The uploaded file appears to be a video/media file, not a professional resume document. ATS systems cannot parse video content.",
-      summaryAr: "خطأ فادح: الملف المرفوع يبدو أنه ملف فيديو أو وسائط، وليس مستند سيرة ذاتية مهني. أنظمة ATS لا يمكنها تحليل محتوى الفيديو.",
+      summaryEn: "The file you uploaded is not a resume. Please upload a PDF or Word document.",
+      summaryAr: "الملف الذي قمت برفعه ليس سيرة ذاتية. يرجى رفع ملف بصيغة PDF أو Word.",
       skills: [
-        { subject: "Technical / تقني", A: 10, fullMark: 100, match: false },
-        { subject: "Soft Skills / مهارات ناعمة", A: 5, fullMark: 100, match: false },
+        { subject: "Technical / تقني", A: 0, fullMark: 100, match: false },
+        { subject: "Soft Skills / مهارات ناعمة", A: 0, fullMark: 100, match: false },
         { subject: "Structure / الهيكلية", A: 0, fullMark: 100, match: false },
         { subject: "Impact / التأثير", A: 0, fullMark: 100, match: false },
         { subject: "Relevance / الملاءمة", A: 0, fullMark: 100, match: false },
       ],
       checks: [
         { labelEn: "File Format (Resume)", labelAr: "تنسيق الملف (سيرة ذاتية)", status: 'fail' },
-        { labelEn: "Text Selectable", labelAr: "النص قابل للتحديد", status: 'fail' },
-        { labelEn: "Contact Info Found", labelAr: "معلومات الاتصال موجودة", status: 'fail' },
-        { labelEn: "Section Headers", labelAr: "عناوين الأقسام", status: 'fail' },
       ],
       suggestions: [
         {
           id: "err-1",
-          titleEn: "Upload Document Only",
-          titleAr: "ارفع مستند فقط",
-          descEn: "Please upload your resume in PDF or Word format to get an accurate analysis.",
-          descAr: "يرجى رفع سيرتك الذاتية بصيغة PDF أو Word للحصول على تحليل دقيق.",
+          titleEn: "Invalid File Type",
+          titleAr: "نوع ملف غير صالح",
+          descEn: "Khabir AI only accepts PDF, DOC, and DOCX files for resume analysis.",
+          descAr: "خبير AI يقبل فقط ملفات PDF و DOC و DOCX لتحليل السيرة الذاتية.",
           impact: "High"
         }
       ]
