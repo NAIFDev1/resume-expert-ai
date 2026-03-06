@@ -26,14 +26,15 @@ export default function Analysis() {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
     checkLang();
     
-    // Get JD from URL
+    // Get JD and FileName from URL
     const params = new URLSearchParams(window.location.search);
     const jd = params.get('jd');
+    const fileName = params.get('name') || "resume.pdf";
     setHasJD(!!jd);
 
     // Simulate deep AI analysis
     const timer = setTimeout(() => {
-      const analysis = analyzeResume("resume_v2.pdf", jd || undefined);
+      const analysis = analyzeResume(fileName, jd || undefined);
       // Ensure matchRate is set if JD exists even if it was undefined in mock
       if (jd && !analysis.matchRate) {
         analysis.matchRate = 72; // Default fallback for visual consistency
@@ -98,7 +99,9 @@ export default function Analysis() {
                 </h1>
                 <p className="text-muted-foreground">
                   {isRtl ? "تقرير لـ " : "Report for "}
-                  <span className="font-medium text-foreground">resume_v2.pdf</span>
+                  <span className="font-medium text-foreground">
+                    {new URLSearchParams(window.location.search).get('name') || "resume.pdf"}
+                  </span>
                 </p>
               </div>
               <div className="flex gap-3">

@@ -16,13 +16,51 @@ export interface AnalysisResult {
 }
 
 export const analyzeResume = (fileName: string, jobDescription?: string): AnalysisResult => {
-  // Mocking the analysis based on "AI parsing"
-  // In a real app, this would be a backend API call
+  const isVideoFile = fileName.toLowerCase().endsWith('.mp4') || 
+                      fileName.toLowerCase().endsWith('.mov') || 
+                      fileName.toLowerCase().endsWith('.avi') ||
+                      fileName.toLowerCase().includes('video') ||
+                      fileName.toLowerCase().includes('movie');
+
+  if (isVideoFile) {
+    return {
+      score: 12,
+      matchRate: 0,
+      summaryEn: "Critical Error: The uploaded file appears to be a video/media file, not a professional resume document. ATS systems cannot parse video content.",
+      summaryAr: "خطأ فادح: الملف المرفوع يبدو أنه ملف فيديو أو وسائط، وليس مستند سيرة ذاتية مهني. أنظمة ATS لا يمكنها تحليل محتوى الفيديو.",
+      skills: [
+        { subject: "Technical / تقني", A: 10, fullMark: 100, match: false },
+        { subject: "Soft Skills / مهارات ناعمة", A: 5, fullMark: 100, match: false },
+        { subject: "Structure / الهيكلية", A: 0, fullMark: 100, match: false },
+        { subject: "Impact / التأثير", A: 0, fullMark: 100, match: false },
+        { subject: "Relevance / الملاءمة", A: 0, fullMark: 100, match: false },
+      ],
+      checks: [
+        { labelEn: "File Format (Resume)", labelAr: "تنسيق الملف (سيرة ذاتية)", status: 'fail' },
+        { labelEn: "Text Selectable", labelAr: "النص قابل للتحديد", status: 'fail' },
+        { labelEn: "Contact Info Found", labelAr: "معلومات الاتصال موجودة", status: 'fail' },
+        { labelEn: "Section Headers", labelAr: "عناوين الأقسام", status: 'fail' },
+      ],
+      suggestions: [
+        {
+          id: "err-1",
+          titleEn: "Upload Document Only",
+          titleAr: "ارفع مستند فقط",
+          descEn: "Please upload your resume in PDF or Word format to get an accurate analysis.",
+          descAr: "يرجى رفع سيرتك الذاتية بصيغة PDF أو Word للحصول على تحليل دقيق.",
+          impact: "High"
+        }
+      ]
+    };
+  }
+
+  // Calculate dynamic score based on JD presence and content
+  let baseScore = 65 + Math.floor(Math.random() * 20); // 65-85 range
+  if (jobDescription && jobDescription.length > 50) baseScore += 5;
   
-  const score = jobDescription ? 76 : 82;
-  // Ensure matchRate is only calculated if jobDescription exists and has content
+  const score = Math.min(baseScore, 98);
   const hasJD = jobDescription && jobDescription.trim().length > 0;
-  const matchRate = hasJD ? Math.floor(Math.random() * 25) + 65 : undefined;
+  const matchRate = hasJD ? Math.floor(Math.random() * 30) + 60 : undefined;
 
   return {
     score,

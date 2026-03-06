@@ -62,11 +62,11 @@ export default function Home() {
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
-            // Correctly pass job description in URL
-            const url = jobDescription 
-              ? `/analysis?jd=${encodeURIComponent(jobDescription)}` 
-              : '/analysis';
-            setLocation(url);
+            // Correctly pass job description and fileName in URL
+            const url = new URL(window.location.origin + '/analysis');
+            if (jobDescription) url.searchParams.set('jd', jobDescription);
+            url.searchParams.set('name', file.name);
+            setLocation(url.pathname + url.search);
           }, 500);
           return 100;
         }
