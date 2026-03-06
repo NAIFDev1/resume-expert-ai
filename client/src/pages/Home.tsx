@@ -20,7 +20,8 @@ import {
   Upload,
   File,
   X,
-  Loader2
+  Loader2,
+  Languages
 } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
@@ -312,29 +313,37 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-6">
             <FeatureCard 
               icon={<Zap className="h-8 w-8 text-blue-500" />}
               title={isRtl ? "تغذية راجعة فورية" : "Instant Feedback"}
               description={isRtl 
                 ? "احصل على نتيجة مفصلة ونصائح قابلة للتنفيذ في ثوانٍ معدودة."
-                : "Get a detailed score and actionable feedback in seconds, not days."}
+                : "Get a detailed score and actionable feedback in seconds."}
               isRtl={isRtl}
             />
             <FeatureCard 
               icon={<Target className="h-8 w-8 text-teal-500" />}
               title={isRtl ? "تحسين للـ ATS" : "ATS Optimization"}
               description={isRtl 
-                ? "تأكد من تجاوز سيرتك الذاتية للفلاتر الآلية التي تستخدمها 99% من الشركات الكبرى."
-                : "Ensure your resume passes the automated filters used by 99% of Fortune 500 companies."}
+                ? "تأكد من تجاوز سيرتك الذاتية للفلاتر الآلية التي تستخدمها الشركات."
+                : "Ensure your resume passes the automated filters used by top companies."}
+              isRtl={isRtl}
+            />
+            <FeatureCard 
+              icon={<Languages className="h-8 w-8 text-orange-500" />}
+              title={isRtl ? "ترجمة احترافية" : "Pro Translation"}
+              description={isRtl 
+                ? "ترجم سيرتك الذاتية بين العربية والإنجليزية بضغطة زر واحدة."
+                : "Translate your resume between Arabic and English with one click."}
               isRtl={isRtl}
             />
             <FeatureCard 
               icon={<FileCheck className="h-8 w-8 text-purple-500" />}
               title={isRtl ? "اقتراحات ذكية" : "Smart Suggestions"}
               description={isRtl 
-                ? "يعيد ذكاؤنا الاصطناعي صياغة نقاط خبرتك لتحقيق أقصى قدر من التأثير."
-                : "Our AI rewrites your bullet points to maximize impact and highlight your achievements."}
+                ? "يعيد ذكاؤنا الاصطناعي صياغة نقاط خبرتك لتحقيق أقصى تأثير."
+                : "Our AI rewrites your points to maximize impact and highlight achievements."}
               isRtl={isRtl}
             />
           </div>
