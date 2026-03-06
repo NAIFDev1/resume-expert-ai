@@ -62,7 +62,11 @@ export default function Home() {
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
-            setLocation(`/analysis?jd=${encodeURIComponent(jobDescription)}`);
+            // Correctly pass job description in URL
+            const url = jobDescription 
+              ? `/analysis?jd=${encodeURIComponent(jobDescription)}` 
+              : '/analysis';
+            setLocation(url);
           }, 500);
           return 100;
         }

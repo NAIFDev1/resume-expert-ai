@@ -20,7 +20,9 @@ export const analyzeResume = (fileName: string, jobDescription?: string): Analys
   // In a real app, this would be a backend API call
   
   const score = jobDescription ? 76 : 82;
-  const matchRate = jobDescription ? Math.floor(Math.random() * 25) + 65 : undefined;
+  // Ensure matchRate is only calculated if jobDescription exists and has content
+  const hasJD = jobDescription && jobDescription.trim().length > 0;
+  const matchRate = hasJD ? Math.floor(Math.random() * 25) + 65 : undefined;
 
   return {
     score,
