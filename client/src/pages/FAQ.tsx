@@ -5,6 +5,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { HelpCircle, Zap, ShieldCheck, Target, FileText, Sparkles } from "lucide-react";
@@ -136,14 +138,6 @@ export default function FAQ() {
           </Button>
         </motion.div>
       </main>
-    </div>
-  );
-}
-
-function Card({ children, className }: any) {
-  return (
-    <div className={`bg-card border shadow-sm ${className}`}>
-      {children}
     </div>
   );
 }
