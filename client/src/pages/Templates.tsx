@@ -17,7 +17,7 @@ const templates = [
     type: "Classic",
     typeAr: "كلاسيكي",
     icon: FileText,
-    color: "bg-blue-500",
+    color: "bg-blue-600",
   },
   {
     id: "modern",
@@ -28,18 +28,18 @@ const templates = [
     type: "Modern",
     typeAr: "عصري",
     icon: Layout,
-    color: "bg-purple-500",
+    color: "bg-indigo-600",
   },
   {
-    id: "tech",
-    nameEn: "Tech Focused",
-    nameAr: "المسار التقني",
-    descEn: "Designed to highlight technical skills and project-based experience.",
-    descAr: "مصمم لإبراز المهارات التقنية والخبرات القائمة على المشاريع.",
-    type: "Technical",
-    typeAr: "تقني",
+    id: "minimal",
+    nameEn: "Minimalist Grid",
+    nameAr: "شبكة بسيطة",
+    descEn: "A minimalist approach using a grid layout to maximize whitespace and clarity.",
+    descAr: "نهج بسيط يستخدم تخطيط الشبكة لزيادة المساحة البيضاء والوضوح.",
+    type: "Minimal",
+    typeAr: "بسيط",
     icon: Zap,
-    color: "bg-emerald-500",
+    color: "bg-slate-800",
   }
 ];
 
@@ -116,9 +116,11 @@ export default function Templates() {
                 </CardContent>
 
                 <CardFooter className="grid grid-cols-2 gap-4 pt-0">
-                  <Button variant="outline" className="w-full group/btn">
-                    <Eye className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
-                    {isRtl ? "معاينة" : "Preview"}
+                  <Button variant="outline" className="w-full group/btn" asChild>
+                    <Link href={`/editor?template=${template.id}`}>
+                      <Eye className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
+                      {isRtl ? "معاينة" : "Preview"}
+                    </Link>
                   </Button>
                   <Button className="w-full" asChild>
                     <Link href={`/editor?template=${template.id}`}>
