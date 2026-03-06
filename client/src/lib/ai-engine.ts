@@ -16,16 +16,21 @@ export interface AnalysisResult {
 }
 
 export const analyzeResume = (fileName: string, jobDescription?: string): AnalysisResult => {
-  const isNotResume = !fileName.toLowerCase().endsWith('.pdf') && 
+  const isNotResume = (!fileName.toLowerCase().endsWith('.pdf') && 
                       !fileName.toLowerCase().endsWith('.doc') && 
-                      !fileName.toLowerCase().endsWith('.docx');
+                      !fileName.toLowerCase().endsWith('.docx')) ||
+                      fileName.toLowerCase().includes('photo') ||
+                      fileName.toLowerCase().includes('image') ||
+                      fileName.toLowerCase().includes('scan') ||
+                      fileName.toLowerCase().includes('book') ||
+                      fileName.toLowerCase().includes('presentation');
 
   if (isNotResume) {
     return {
       score: 0,
       matchRate: 0,
-      summaryEn: "The file you uploaded is not a resume. Please upload a PDF or Word document.",
-      summaryAr: "الملف الذي قمت برفعه ليس سيرة ذاتية. يرجى رفع ملف بصيغة PDF أو Word.",
+      summaryEn: "The file you uploaded is not a resume. Please upload a professional CV document.",
+      summaryAr: "الملف الذي قمت برفعه ليس سيرة ذاتية. يرجى رفع مستند سيرة ذاتية مهني.",
       skills: [
         { subject: "Technical / تقني", A: 0, fullMark: 100, match: false },
         { subject: "Soft Skills / مهارات ناعمة", A: 0, fullMark: 100, match: false },
