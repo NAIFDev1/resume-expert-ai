@@ -358,12 +358,12 @@ export default function Home() {
             <p className="text-muted-foreground">{isRtl ? "قصص نجاح حقيقية من مستخدمينا" : "Real success stories from our users"}</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -5 }}
-                className="bg-card p-8 rounded-3xl border border-primary/10 shadow-lg relative"
-              >
+              {testimonials.map((t, i) => (
+                <motion.div
+                  key={`testimonial-${i}`}
+                  whileHover={{ y: -5 }}
+                  className="bg-card p-8 rounded-3xl border border-primary/10 shadow-lg relative"
+                >
                 <div className="flex gap-1 mb-4">
                   {[1,2,3,4,5].map(s => <Star key={s} className="h-4 w-4 fill-primary text-primary" />)}
                 </div>

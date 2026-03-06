@@ -80,7 +80,9 @@ export function Navbar() {
             </a>
           </Link>
           <Link href="/#upload">
-            <Button size="sm">{lang === "ar" ? "ابدأ الآن" : "Get Started"}</Button>
+            <Button size="sm" asChild>
+              <span>{lang === "ar" ? "ابدأ الآن" : "Get Started"}</span>
+            </Button>
           </Link>
         </div>
       </div>
