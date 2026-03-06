@@ -32,7 +32,7 @@ export default function Auth() {
     <div className="min-h-screen bg-muted/20 font-sans flex flex-col">
       <Navbar />
       
-      <main className="flex-1 container flex items-center justify-center py-12">
+      <main className="flex-1 flex items-center justify-center p-4">
         <motion.div
           key={isRtl ? 'ar' : 'en'} // Re-animate on language change
           initial={{ opacity: 0, y: 20 }}
