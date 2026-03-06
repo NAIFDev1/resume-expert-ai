@@ -14,6 +14,7 @@ export default function Analysis() {
   const [isRtl, setIsRtl] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasJD, setHasJD] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
@@ -28,6 +29,7 @@ export default function Analysis() {
     // Get JD from URL
     const params = new URLSearchParams(window.location.search);
     const jd = params.get('jd');
+    setHasJD(!!jd);
 
     // Simulate deep AI analysis
     const timer = setTimeout(() => {
@@ -151,7 +153,7 @@ export default function Analysis() {
                 <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
                 <div className="relative z-10">
                   <span className="text-5xl font-black mb-2 block tracking-tighter">
-                    {result?.matchRate || (params.get('jd') ? "65" : "--")}%
+                    {result?.matchRate || (hasJD ? "65" : "--")}%
                   </span>
                   <span className="text-sm font-bold uppercase tracking-widest opacity-90">
                     {isRtl ? "نسبة المطابقة" : "Match Rate"}
