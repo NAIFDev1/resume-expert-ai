@@ -100,7 +100,7 @@ export default function Home() {
               <span>{isRtl ? "مستقبلك المهني يبدأ من هنا" : "Your career future starts here"}</span>
             </div>
             
-            <h1 className="text-5xl lg:text-7xl font-heading font-bold leading-[1.2] mb-6">
+            <h1 className="text-5xl lg:text-7xl font-handwritten leading-[1.4] mb-6">
               {isRtl ? "حلل سيرتك الذاتية وتجاوز أنظمة التوظيف" : "Analyze your resume and pass ATS systems"}
               <br />
               <span className="text-foreground">{isRtl ? "مع خبير" : "with Khabir"}</span>
@@ -197,7 +197,7 @@ export default function Home() {
       {/* 3. UPLOAD SECTION */}
       <section id="upload-section" className="py-24 px-6 lg:px-8 max-w-3xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-heading font-bold mb-4">{isRtl ? "ابدأ التحليل الآن" : "Start Your Analysis"}</h2>
+          <h2 className="text-4xl font-handwritten mb-4">{isRtl ? "ابدأ التحليل الآن" : "Start Your Analysis"}</h2>
           <p className="text-lg text-foreground">{isRtl ? "ارفع سيرتك الذاتية وسنقوم بالباقي بدقة متناهية" : "Upload your resume and we'll handle the rest with precision"}</p>
         </div>
         
@@ -264,7 +264,7 @@ export default function Home() {
       <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">{isRtl ? "رؤى قابلة للتنفيذ" : "Actionable Insights"}</h2>
+            <h2 className="text-3xl md:text-4xl font-handwritten mb-4">{isRtl ? "رؤى قابلة للتنفيذ" : "Actionable Insights"}</h2>
             <p className="text-lg text-foreground">{isRtl ? "اكتشف بالضبط ما يراه مديرو التوظيف وأنظمة ATS." : "Discover exactly what recruiters and ATS systems see."}</p>
           </div>
 
@@ -313,7 +313,7 @@ export default function Home() {
       <section className="py-24 border-y">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">{isRtl ? "كل ما تحتاجه للنجاح" : "Everything you need to succeed"}</h2>
+            <h2 className="text-3xl md:text-4xl font-handwritten mb-4">{isRtl ? "كل ما تحتاجه للنجاح" : "Everything you need to succeed"}</h2>
             <p className="text-lg text-foreground">{isRtl ? "أدوات متقدمة صممت خصيصاً لتجاوز أنظمة التوظيف" : "Advanced tools specifically built to bypass hiring filters."}</p>
           </div>
 
@@ -346,7 +346,7 @@ export default function Home() {
       <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold">{isRtl ? "كيف يعمل خبير؟" : "How It Works"}</h2>
+            <h2 className="text-3xl md:text-4xl font-handwritten">{isRtl ? "كيف يعمل خبير؟" : "How It Works"}</h2>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 relative">
@@ -378,7 +378,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <div>
-              <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">{isRtl ? "قوالب احترافية معتمدة" : "Professional Templates"}</h2>
+              <h2 className="text-3xl md:text-4xl font-handwritten mb-4">{isRtl ? "قوالب احترافية معتمدة" : "Professional Templates"}</h2>
               <p className="text-lg text-foreground">{isRtl ? "مصممة خصيصاً لتجاوز الفلاتر الآلية" : "Specifically designed to pass automated filters."}</p>
             </div>
             <Button variant="outline" className="rounded-full font-bold" asChild>
@@ -409,7 +409,7 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-background rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           
           <div className="relative z-10">
-            <h2 className="text-4xl lg:text-5xl font-heading font-bold mb-6">
+            <h2 className="text-4xl lg:text-5xl font-handwritten mb-6">
               {isRtl ? "طور سيرتك الذاتية في دقائق" : "Improve your resume in minutes"}
             </h2>
             <p className="text-xl text-background mb-10 max-w-2xl mx-auto font-sans font-medium">

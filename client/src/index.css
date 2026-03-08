@@ -1,11 +1,22 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: 'AlKhattAlYadawey';
+  src: url('./assets/fonts/AlKhattAlYadawey.woff2') format('woff2'),
+       url('./assets/fonts/AlKhattAlYadawey.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Aref Ruqaa', serif;
-  --font-heading: 'Aref Ruqaa', serif;
+  --font-sans: 'Cairo', sans-serif;
+  --font-arabic: 'Cairo', sans-serif;
+  --font-handwritten: 'AlKhattAlYadawey', sans-serif;
+  --font-heading: 'Cairo', sans-serif;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
