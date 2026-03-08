@@ -1,0 +1,196 @@
+You are a senior frontend engineer and UI/UX designer.
+
+I am building a project called "Khabir" — an AI-powered Resume Analyzer. The app is built in Replit using React, TypeScript, Vite, TailwindCSS, and Framer Motion. It is currently a frontend-only project with no backend.
+
+I want you to redesign and improve the UI of the project to make it look like a polished modern SaaS product, while keeping the current project structure clean and reusable.
+
+Very important rule:
+DO NOT remove the existing Floating Bottom Navigation.
+It must stay in the design.
+You are allowed to improve it visually and functionally, but you must not delete it or replace it with a different navigation concept.
+The floating bottom navigation is one of the design elements I like most and I want to keep it as part of the product identity.
+
+Design goals:
+- Clean, modern, minimal SaaS interface
+- Professional and premium feel
+- Strong black / white / gray visual system
+- One subtle accent color only
+- Responsive across desktop, tablet, and mobile
+- Smooth micro-interactions using Framer Motion
+- Reusable React components
+- Consistent spacing, typography, and card design
+- The result should feel like a real startup product, not a student project
+
+Global design guidelines:
+- Use React + TypeScript
+- Use TailwindCSS
+- Use Framer Motion for subtle fade, slide, hover, and scale animations
+- Use rounded-2xl cards and rounded-full for pills/buttons where appropriate
+- Use soft shadows and light borders
+- Use max-w-7xl containers
+- Use generous spacing such as py-16 to py-24 between sections
+- Keep the design highly readable and uncluttered
+- Support Arabic and English layouts cleanly
+- Preserve the premium minimal aesthetic
+
+Important navigation requirement:
+Keep the Floating Bottom Navigation in the project.
+You may improve it using:
+- glassmorphism styling
+- backdrop blur
+- better active state
+- smoother hover/press animations
+- optional tooltips
+- better icon spacing
+- subtle scaling for active item
+But do not remove it.
+
+Suggested floating bottom navigation style:
+- fixed at bottom center
+- rounded-full container
+- semi-transparent background
+- backdrop-blur-xl
+- shadow-lg
+- border with subtle opacity
+- active tab displayed as a dark pill with icon + label
+- inactive tabs displayed as icons only or minimal icons with hover state
+- smooth animation between active states
+
+Now redesign the Landing Page of Khabir with the following structure:
+
+1. Sticky Navbar
+- Logo: Khabir
+- Navigation links: Home, Templates, FAQ, Login
+- Language switcher
+- Dark mode toggle
+- CTA button: Upload Resume
+- Transparent at the top, then becomes blurred/solid on scroll
+
+2. Hero Section
+Two-column layout on desktop, stacked on mobile.
+
+Left side:
+- Small badge: "Your career future starts here"
+- Main headline:
+  "Analyze your resume and pass ATS systems"
+  "with Khabir AI"
+- Clear supporting paragraph explaining AI resume analysis, ATS optimization, missing skills detection, and resume improvement
+- Primary CTA: "Upload Your Resume"
+- Secondary CTA: "See How It Works"
+- Small supporting text: "Supports PDF, DOC, DOCX • Arabic & English • Instant analysis"
+
+Right side:
+- A premium mockup card showing example resume analysis
+- File name: Naif_Resume.pdf
+- ATS Score: 82%
+- Job Match: 76%
+- Indicators:
+  ✓ Good structure
+  ✓ Keywords detected
+  ⚠ Missing skills
+  ⚠ Weak action verbs
+- Skill tags:
+  React, TypeScript, Node.js, Docker, AWS
+
+3. Trust Bar
+A horizontal row highlighting:
+- ATS optimized analysis
+- Arabic & English support
+- AI-powered improvement suggestions
+- Professional resume templates
+
+4. Upload Section
+A large centered premium upload card:
+- Drag and drop upload zone
+- Message: "Drag and drop your resume here"
+- Supported formats: PDF, DOC, DOCX
+- Button: "Select File"
+- Optional textarea below:
+  "Paste job description to compare with your resume"
+- Main CTA button:
+  "Start Analysis"
+
+5. Demo Results Section
+Three premium cards:
+- ATS Score: 82%
+- Job Match: 76%
+- AI Suggestions:
+  Improve summary
+  Add measurable achievements
+  Use stronger action verbs
+
+6. Features Section
+Four feature cards:
+- AI Resume Analysis
+- Job Description Matching
+- AI Resume Improvement
+- Built-in Resume Editor
+
+Each card should have:
+- icon
+- title
+- short description
+- subtle hover animation
+
+7. Templates Preview Section
+Show 3 resume template cards:
+- Classic
+- Modern
+- Minimal
+
+Each card should include:
+- preview placeholder
+- short description
+- button: "Use Template"
+
+8. How It Works Section
+Three steps:
+1. Upload your resume
+2. Get AI analysis
+3. Improve and download
+
+9. FAQ Preview Section
+Accordion-style questions:
+- What is ATS?
+- Why do companies reject resumes?
+- How can I improve resume keywords?
+Add a "View all FAQs" link.
+
+10. Final CTA Section
+Large premium CTA card:
+Headline:
+"Improve your resume in minutes with Khabir AI"
+Description:
+Get instant analysis, smart suggestions, and professional templates.
+Buttons:
+- Upload Resume
+- Explore Templates
+
+11. Footer
+Include:
+- Khabir logo
+- short description
+- navigation links
+- copyright:
+© Khabir – Graduation Project
+
+Extra UI requirements:
+- Add subtle section entrance animations
+- Add hover states for buttons and cards
+- Make cards feel premium and spacious
+- Use strong typography hierarchy
+- Keep the page minimal and elegant
+- Avoid clutter
+- Make the page feel like a real AI SaaS landing page
+
+Implementation requirements:
+- Return clean React + TypeScript component code
+- Break the UI into reusable components
+- Keep components organized and maintainable
+- Use Tailwind utility classes directly
+- Use Framer Motion where needed, but do not overdo animations
+- Preserve compatibility with Replit project structure
+
+Final reminder:
+Do not remove the Floating Bottom Navigation.
+Keep it, improve it, and integrate it nicely with the new design.
