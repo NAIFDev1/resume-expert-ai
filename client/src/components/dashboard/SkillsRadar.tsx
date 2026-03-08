@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis, Tooltip } from "recharts";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 export function SkillsRadar({ data }: { data?: any[] }) {
   const [isRtl, setIsRtl] = useState(false);
@@ -25,8 +24,8 @@ export function SkillsRadar({ data }: { data?: any[] }) {
   }));
 
   return (
-    <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
-      <CardHeader className="bg-secondary/50 border-b border-border/50 pb-4">
+    <Card className="h-full border shadow-sm rounded-[2rem] overflow-hidden bg-card">
+      <CardHeader className="bg-secondary border-b pb-4">
         <CardTitle className="text-xl font-bold font-heading">
           {isRtl ? "تحليل المهارات" : "Skills Analysis"}
         </CardTitle>
@@ -38,23 +37,24 @@ export function SkillsRadar({ data }: { data?: any[] }) {
               <PolarGrid stroke="hsl(var(--border))" />
               <PolarAngleAxis 
                 dataKey="subject" 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }}
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: "bold", fontFamily: "sans-serif" }}
               />
               <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
               <Radar
                 name="Score"
                 dataKey="A"
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-                fill="hsl(var(--primary))"
-                fillOpacity={0.2}
+                stroke="hsl(var(--foreground))"
+                strokeWidth={3}
+                fill="hsl(var(--foreground))"
+                fillOpacity={0.1}
               />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: "hsl(var(--card))",
                   borderColor: "hsl(var(--border))",
                   borderRadius: "1rem",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
+                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                  fontWeight: "bold"
                 }}
                 itemStyle={{ color: "hsl(var(--foreground))", fontWeight: "bold" }}
               />

@@ -17,7 +17,7 @@ const templates = [
     type: "Classic",
     typeAr: "كلاسيكي",
     icon: FileText,
-    color: "bg-blue-600",
+    color: "bg-background",
   },
   {
     id: "modern",
@@ -28,7 +28,8 @@ const templates = [
     type: "Modern",
     typeAr: "عصري",
     icon: Layout,
-    color: "bg-indigo-600",
+    color: "bg-foreground",
+    iconColor: "text-background"
   },
   {
     id: "minimal",
@@ -39,7 +40,7 @@ const templates = [
     type: "Minimal",
     typeAr: "بسيط",
     icon: Zap,
-    color: "bg-slate-800",
+    color: "bg-background",
   }
 ];
 
@@ -55,17 +56,17 @@ export default function Templates() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-muted/20 font-sans">
+    <div className="min-h-screen bg-background font-sans pb-24">
       <Navbar />
-      <main className="container px-4 mx-auto py-12">
+      <main className="container px-4 mx-auto py-24">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <Badge className="mb-4 px-4 py-1 rounded-full bg-primary/10 text-primary border-primary/20">
+          <Badge className="mb-6 px-4 py-1 rounded-full bg-background text-foreground border font-bold">
             {isRtl ? "نماذج معتمدة" : "Verified Templates"}
           </Badge>
-          <h1 className="text-4xl font-heading font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-6 tracking-tight">
             {isRtl ? "اختر القالب المثالي لمسارك" : "Choose the Perfect Template"}
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-foreground text-lg font-bold">
             {isRtl 
               ? "قوالب مصممة بدقة لتتوافق مع أنظمة ATS وتبرز مهاراتك أمام مديري التوظيف."
               : "Precision-engineered templates designed to pass ATS filters and stand out to recruiters."}
@@ -80,31 +81,30 @@ export default function Templates() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="group overflow-hidden border-primary/10 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-2 flex flex-col h-full bg-card">
-                <div className={`h-48 ${template.color} relative overflow-hidden flex items-center justify-center bg-opacity-90`}>
-                  <div className="absolute inset-0 bg-grid-white/10" />
-                  <template.icon className="h-20 w-20 text-white/40 group-hover:scale-110 transition-transform duration-500" />
+              <Card className="group overflow-hidden border transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-2 flex flex-col h-full bg-card rounded-[2rem]">
+                <div className={`h-48 ${template.color} relative overflow-hidden flex items-center justify-center border-b`}>
+                  <template.icon className={`h-16 w-16 group-hover:scale-110 transition-transform duration-500 ${template.iconColor ? template.iconColor : 'text-foreground'}`} />
                   <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-                    <Badge variant="secondary" className="bg-white/20 text-white border-none backdrop-blur-md">
+                    <Badge variant="outline" className={`border backdrop-blur-md font-bold ${template.color === 'bg-foreground' ? 'bg-background text-background' : 'bg-background text-foreground'}`}>
                       {isRtl ? template.typeAr : template.type}
                     </Badge>
                   </div>
                 </div>
                 
-                <CardHeader>
-                  <CardTitle className="text-2xl font-heading">
+                <CardHeader className="pt-8">
+                  <CardTitle className="text-2xl font-heading font-bold">
                     {isRtl ? template.nameAr : template.nameEn}
                   </CardTitle>
                 </CardHeader>
                 
                 <CardContent className="flex-1">
-                  <p className="text-muted-foreground leading-relaxed">
+                  <p className="text-foreground leading-relaxed font-bold text-sm">
                     {isRtl ? template.descAr : template.descEn}
                   </p>
                   <ul className="mt-6 space-y-3">
                     {[1, 2, 3].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-foreground/80">
-                        <Check className="h-4 w-4 text-primary shrink-0" />
+                      <li key={item} className="flex items-center gap-2 text-sm text-foreground font-bold">
+                        <Check className="h-4 w-4 shrink-0" />
                         <span>
                           {isRtl 
                             ? (item === 1 ? "متوافق 100% مع ATS" : item === 2 ? "تنسيق نظيف ومنظم" : "سهل التخصيص")
@@ -115,14 +115,14 @@ export default function Templates() {
                   </ul>
                 </CardContent>
 
-                <CardFooter className="grid grid-cols-2 gap-4 pt-0">
-                  <Button variant="outline" className="w-full group/btn" asChild>
+                <CardFooter className="grid grid-cols-2 gap-4 pb-8">
+                  <Button variant="outline" className="w-full rounded-xl font-bold border-foreground" asChild>
                     <Link href={`/editor?template=${template.id}`}>
                       <Eye className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
                       {isRtl ? "معاينة" : "Preview"}
                     </Link>
                   </Button>
-                  <Button className="w-full" asChild>
+                  <Button className="w-full rounded-xl font-bold" asChild>
                     <Link href={`/editor?template=${template.id}`}>
                       {isRtl ? "استخدام" : "Use This"}
                     </Link>
@@ -133,16 +133,16 @@ export default function Templates() {
           ))}
         </div>
 
-        <div className="mt-20 bg-primary/5 rounded-3xl p-10 border border-primary/10 text-center max-w-4xl mx-auto">
-          <h2 className="text-2xl font-heading font-bold mb-4">
+        <div className="mt-20 bg-foreground text-background rounded-[3rem] p-12 border text-center max-w-4xl mx-auto shadow-xl">
+          <h2 className="text-3xl font-heading font-bold mb-4">
             {isRtl ? "هل تبحث عن شيء مخصص؟" : "Looking for something custom?"}
           </h2>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-background font-bold mb-8 max-w-lg mx-auto">
             {isRtl 
               ? "خبير AI يمكنه مساعدتك في بناء قالب فريد يناسب تخصصك النادر."
               : "Khabir AI can help you build a unique template tailored to your specific niche."}
           </p>
-          <Button size="lg" className="rounded-full px-8">
+          <Button size="lg" className="rounded-full px-10 bg-background text-foreground hover:bg-background font-bold h-14">
             {isRtl ? "تحدث مع خبير AI" : "Chat with Khabir AI"}
           </Button>
         </div>

@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Inter', 'Segoe UI', 'Tahoma', sans-serif;
-  --font-heading: 'Inter', 'Segoe UI', 'Tahoma', sans-serif;
+  --font-sans: 'Aref Ruqaa', 'Amiri', serif;
+  --font-heading: 'Aref Ruqaa', 'Amiri', serif;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -34,68 +34,71 @@
 }
 
 :root {
-  /* Premium Minimalist SaaS Theme - Grayscale + Subtle Indigo */
+  /* Pure Black & White Theme - Strict No Gray */
   --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
+  --foreground: 0 0% 0%;
   
   --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
+  --card-foreground: 0 0% 0%;
   
   --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
+  --popover-foreground: 0 0% 0%;
   
-  /* Subtle Deep Indigo Accent */
-  --primary: 230 60% 25%;
+  /* Primary is Black */
+  --primary: 0 0% 0%;
   --primary-foreground: 0 0% 100%;
   
-  /* Very light gray for soft backgrounds */
-  --secondary: 240 5% 96%;
-  --secondary-foreground: 240 6% 10%;
+  /* Secondary is White */
+  --secondary: 0 0% 100%;
+  --secondary-foreground: 0 0% 0%;
   
-  --muted: 240 5% 96%;
-  --muted-foreground: 240 4% 46%;
+  /* Muted is White */
+  --muted: 0 0% 100%;
+  --muted-foreground: 0 0% 0%;
   
-  --accent: 240 5% 96%;
-  --accent-foreground: 240 6% 10%;
+  /* Accent is Black */
+  --accent: 0 0% 0%;
+  --accent-foreground: 0 0% 100%;
   
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: 0 0% 0%;
+  --destructive-foreground: 0 0% 100%;
 
-  --border: 240 6% 90%;
-  --input: 240 6% 90%;
-  --ring: 230 60% 25%;
+  /* Borders are Black */
+  --border: 0 0% 0%;
+  --input: 0 0% 0%;
+  --ring: 0 0% 0%;
 
-  --radius: 1rem;
+  --radius: 0rem;
 }
 
 .dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
   
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
+  --card: 0 0% 0%;
+  --card-foreground: 0 0% 100%;
   
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
+  --popover: 0 0% 0%;
+  --popover-foreground: 0 0% 100%;
   
-  --primary: 230 70% 60%;
-  --primary-foreground: 240 6% 10%;
+  --primary: 0 0% 100%;
+  --primary-foreground: 0 0% 0%;
   
-  --secondary: 240 4% 16%;
-  --secondary-foreground: 0 0% 98%;
+  --secondary: 0 0% 0%;
+  --secondary-foreground: 0 0% 100%;
   
-  --muted: 240 4% 16%;
-  --muted-foreground: 240 5% 65%;
+  --muted: 0 0% 0%;
+  --muted-foreground: 0 0% 100%;
   
-  --accent: 240 4% 16%;
-  --accent-foreground: 0 0% 98%;
+  --accent: 0 0% 100%;
+  --accent-foreground: 0 0% 0%;
   
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: 0 0% 100%;
+  --destructive-foreground: 0 0% 0%;
   
-  --border: 240 4% 16%;
-  --input: 240 4% 16%;
-  --ring: 240 5% 65%;
+  --border: 0 0% 100%;
+  --input: 0 0% 100%;
+  --ring: 0 0% 100%;
 }
 
 @layer base {
@@ -104,8 +107,13 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-size: 1.125rem;
+    line-height: 1.8;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight;
+    @apply font-heading font-bold;
+  }
+  div, section, article, nav, header, footer, span, p, a, button, input, textarea {
+    border-color: hsl(var(--border)) !important;
   }
 }
