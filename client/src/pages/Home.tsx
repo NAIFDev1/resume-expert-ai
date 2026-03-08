@@ -445,9 +445,9 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-4 font-sans uppercase tracking-widest">{isRtl ? "الروابط" : "Links"}</h4>
               <ul className="space-y-3 text-foreground text-sm font-bold font-sans">
-                <li><Link href="/"><a className="hover:text-foreground transition-colors">{isRtl ? "الرئيسية" : "Home"}</a></Link></li>
-                <li><Link href="/templates"><a className="hover:text-foreground transition-colors">{isRtl ? "النماذج" : "Templates"}</a></Link></li>
-                <li><Link href="/faq"><a className="hover:text-foreground transition-colors">{isRtl ? "الأسئلة الشائعة" : "FAQ"}</a></Link></li>
+                <li><Link href="/" className="hover:text-foreground transition-colors">{isRtl ? "الرئيسية" : "Home"}</Link></li>
+                <li><Link href="/templates" className="hover:text-foreground transition-colors">{isRtl ? "النماذج" : "Templates"}</Link></li>
+                <li><Link href="/faq" className="hover:text-foreground transition-colors">{isRtl ? "الأسئلة الشائعة" : "FAQ"}</Link></li>
               </ul>
             </div>
             <div>

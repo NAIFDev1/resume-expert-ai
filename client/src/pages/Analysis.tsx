@@ -128,7 +128,7 @@ export default function Analysis() {
                 <div className="relative h-32 w-32 flex items-center justify-center mb-4">
                    <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
                      <circle className="text-secondary" strokeWidth="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
-                     <circle className="text-foreground" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={`${251.2 * (1 - (result?.score || 0)0)}`} strokeLinecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                     <circle className="text-foreground" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={`${251.2 * (1 - (result?.score || 0)/100)}`} strokeLinecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
                    </svg>
                    <div className="absolute inset-0 flex flex-col items-center justify-center">
                      <span className="text-4xl font-black font-sans">{result?.score}</span>

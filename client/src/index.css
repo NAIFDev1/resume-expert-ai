@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Aref Ruqaa', 'Amiri', serif;
-  --font-heading: 'Aref Ruqaa', 'Amiri', serif;
+  --font-sans: 'Aref Ruqaa', serif;
+  --font-heading: 'Aref Ruqaa', serif;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
