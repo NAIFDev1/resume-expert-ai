@@ -32,9 +32,8 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/">
-          <a className="font-heading text-3xl tracking-tighter flex items-center group">
-            <span className="font-black text-primary drop-shadow-sm">خبير</span>
-            <div className="w-2 h-2 rounded-full bg-primary ml-1 mt-4" />
+          <a className="font-heading text-3xl tracking-tighter font-black text-primary drop-shadow-sm">
+            خبير
           </a>
         </Link>
 
