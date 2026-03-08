@@ -45,71 +45,66 @@
 }
 
 :root {
-  /* Pure Black & White Theme - Strict No Gray */
+  /* Modern SaaS Theme */
   --background: 0 0% 100%;
-  --foreground: 0 0% 0%;
+  --foreground: 240 10% 3.9%;
   
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 0%;
+  --card-foreground: 240 10% 3.9%;
   
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 0%;
+  --popover-foreground: 240 10% 3.9%;
   
-  /* Primary is Black */
-  --primary: 0 0% 0%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
   
-  /* Secondary is White */
-  --secondary: 0 0% 100%;
-  --secondary-foreground: 0 0% 0%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
   
-  /* Muted is White */
-  --muted: 0 0% 100%;
-  --muted-foreground: 0 0% 0%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
   
-  /* Accent is Black */
-  --accent: 0 0% 0%;
-  --accent-foreground: 0 0% 100%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
   
-  --destructive: 0 0% 0%;
-  --destructive-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
 
-  /* Borders are Black */
-  --border: 0 0% 0%;
-  --input: 0 0% 0%;
-  --ring: 0 0% 0%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
 
-  --radius: 0rem;
+  --radius: 1rem;
 }
 
 .dark {
-  --background: 0 0% 0%;
-  --foreground: 0 0% 100%;
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
   
-  --card: 0 0% 0%;
-  --card-foreground: 0 0% 100%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
   
-  --popover: 0 0% 0%;
-  --popover-foreground: 0 0% 100%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
   
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 0%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
   
-  --secondary: 0 0% 0%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
   
-  --muted: 0 0% 0%;
-  --muted-foreground: 0 0% 100%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
   
-  --accent: 0 0% 100%;
-  --accent-foreground: 0 0% 0%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
   
-  --destructive: 0 0% 100%;
-  --destructive-foreground: 0 0% 0%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
   
-  --border: 0 0% 100%;
-  --input: 0 0% 100%;
-  --ring: 0 0% 100%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
 }
 
 @layer base {
@@ -118,13 +113,19 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-size: 1.125rem;
-    line-height: 1.8;
+    font-size: 1rem;
+    line-height: 1.6;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold;
+    @apply font-heading font-bold tracking-tight text-foreground;
   }
-  div, section, article, nav, header, footer, span, p, a, button, input, textarea {
-    border-color: hsl(var(--border)) !important;
+}
+
+@layer utilities {
+  .shadow-soft {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.02);
+  }
+  .shadow-soft-lg {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 20px 60px rgba(0, 0, 0, 0.04);
   }
 }
