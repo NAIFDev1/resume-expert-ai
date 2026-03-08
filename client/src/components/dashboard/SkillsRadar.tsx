@@ -1,58 +1,62 @@
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis, Tooltip } from "recharts";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
-interface SkillData {
-  subject: string;
-  A: number;
-  fullMark: number;
-}
-
-interface SkillsRadarProps {
-  data?: SkillData[];
-}
-
-const defaultDataEn = [
-  { subject: "Technical", A: 90, fullMark: 100 },
-  { subject: "Soft Skills", A: 65, fullMark: 100 },
-  { subject: "Structure", A: 85, fullMark: 100 },
-  { subject: "Impact", A: 50, fullMark: 100 },
-  { subject: "Relevance", A: 80, fullMark: 100 },
-];
-
-export function SkillsRadar({ data }: SkillsRadarProps) {
+export function SkillsRadar({ data }: { data?: any[] }) {
   const [isRtl, setIsRtl] = useState(false);
 
   useEffect(() => {
     setIsRtl(document.documentElement.dir === 'rtl');
+    const observer = new MutationObserver(() => {
+      setIsRtl(document.documentElement.dir === 'rtl');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+    return () => observer.disconnect();
   }, []);
 
-  const chartData = data || defaultDataEn;
+  if (!data) return null;
+
+  // Clean data for radar chart based on language
+  const chartData = data.map(item => ({
+    subject: item.subject.split(' / ')[isRtl ? 1 : 0],
+    A: item.A,
+    fullMark: item.fullMark
+  }));
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>{isRtl ? "تحليل فجوة المهارات" : "Skill Gap Analysis"}</CardTitle>
-        <CardDescription>
-          {isRtl ? "توزيع مرئي لنقاط القوة في سيرتك الذاتية" : "Visual breakdown of your resume's strengths"}
-        </CardDescription>
+    <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
+      <CardHeader className="bg-secondary/50 border-b border-border/50 pb-4">
+        <CardTitle className="text-xl font-bold font-heading">
+          {isRtl ? "تحليل المهارات" : "Skills Analysis"}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
-              <PolarGrid stroke="hsl(var(--muted-foreground)/0.2)" />
+            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
+              <PolarGrid stroke="hsl(var(--border))" />
               <PolarAngleAxis 
                 dataKey="subject" 
-                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} 
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12, fontWeight: 600 }}
               />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
               <Radar
-                name="My Resume"
+                name="Score"
                 dataKey="A"
                 stroke="hsl(var(--primary))"
-                strokeWidth={3}
+                strokeWidth={2}
                 fill="hsl(var(--primary))"
                 fillOpacity={0.2}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: "hsl(var(--card))",
+                  borderColor: "hsl(var(--border))",
+                  borderRadius: "1rem",
+                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
+                }}
+                itemStyle={{ color: "hsl(var(--foreground))", fontWeight: "bold" }}
               />
             </RadarChart>
           </ResponsiveContainer>

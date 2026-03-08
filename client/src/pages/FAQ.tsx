@@ -1,58 +1,9 @@
 import { Navbar } from "@/components/layout/Navbar";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { HelpCircle, Zap, ShieldCheck, Target, FileText, Sparkles } from "lucide-react";
-
-const faqData = [
-  {
-    id: "item-1",
-    questionAr: "ما هو نظام الـ ATS وكيف يعمل؟",
-    questionEn: "What is an ATS and how does it work?",
-    answerAr: "نظام ATS هو برنامج تستخدمه الشركات لفرز السير الذاتية آلياً. يعمل عن طريق البحث عن كلمات مفتاحية محددة، مهارات، وتواريخ خبرة معينة. إذا لم تكن سيرتك الذاتية منسقة بشكل صحيح لهذا النظام، فقد يتم استبعادها حتى لو كنت مؤهلاً.",
-    answerEn: "An ATS is software used by companies to sort resumes automatically. It works by searching for specific keywords, skills, and experience dates. If your resume isn't formatted correctly for this system, it might be filtered out even if you're qualified.",
-    icon: Target
-  },
-  {
-    id: "item-2",
-    questionAr: "كيف يمكنني تحسين نسبة المطابقة (Match Rate)؟",
-    questionEn: "How can I improve my Match Rate?",
-    answerAr: "لرفع نسبة المطابقة، تأكد من تضمين الكلمات المفتاحية الموجودة في 'الوصف الوظيفي' داخل خبراتك ومهاراتك. استخدم ميزة 'تحسين بالذكاء' في المحرر لضبط صياغتك تلقائياً.",
-    answerEn: "To improve your Match Rate, ensure you include keywords from the 'Job Description' within your experience and skills sections. Use the 'AI Improve' feature in the editor to automatically adjust your phrasing.",
-    icon: Sparkles
-  },
-  {
-    id: "item-3",
-    questionAr: "هل يدعم 'خبير' السير الذاتية باللغة العربية؟",
-    questionEn: "Does Khabir support Arabic resumes?",
-    answerAr: "نعم، 'خبير' مصمم خصيصاً لدعم اللغة العربية والإنجليزية بذكاء، مع مراعاة اتجاهات الكتابة (RTL) والمصطلحات المهنية المستخدمة في السوق العربي والعالمي.",
-    answerEn: "Yes, Khabir is specifically designed to support both Arabic and English intelligently, handling RTL layouts and professional terminology used in both regional and international markets.",
-    icon: FileText
-  },
-  {
-    id: "item-4",
-    questionAr: "كيف أجعل سيرتي الذاتية متوافقة مع الـ ATS؟",
-    questionEn: "How do I make my resume ATS-friendly?",
-    answerAr: "لجعلها متوافقة: 1. استخدم تنسيقاً بسيطاً وعموداً واحداً. 2. تجنب الجداول والرسومات المعقدة. 3. استخدم كلمات مفتاحية مطابقة للوصف الوظيفي. 4. احفظ الملف بصيغة PDF نصية. قوالب 'خبير' تضمن لك كل هذه المعايير تلقائياً.",
-    answerEn: "To make it friendly: 1. Use a simple, single-column layout. 2. Avoid tables and complex graphics. 3. Use keywords that match the job description. 4. Save as a text-based PDF. Khabir templates ensure all these standards automatically.",
-    icon: ShieldCheck
-  },
-  {
-    id: "item-5",
-    questionAr: "هل بياناتي آمنة وسرية؟",
-    questionEn: "Is my data safe and private?",
-    answerAr: "بكل تأكيد. نحن نستخدم تقنيات تشفير متطورة ولا نقوم بمشاركة بياناتك الشخصية مع أي أطراف خارجية. خصوصيتك هي أولويتنا القصوى.",
-    answerEn: "Absolutely. We use advanced encryption technologies and do not share your personal data with third parties. Your privacy is our top priority.",
-    icon: ShieldCheck
-  }
-];
+import { HelpCircle, Mail, MessageSquare } from "lucide-react";
 
 export default function FAQ() {
   const [isRtl, setIsRtl] = useState(false);
@@ -65,78 +16,103 @@ export default function FAQ() {
     return () => observer.disconnect();
   }, []);
 
+  const faqs = [
+    {
+      qAr: "ما هو نظام خبير وكيف يعمل؟",
+      qEn: "What is Khabir and how does it work?",
+      aAr: "خبير هو منصة ذكية لتحليل وتحسين السير الذاتية باستخدام الذكاء الاصطناعي. يقوم النظام بمقارنة سيرتك الذاتية مع متطلبات الوظيفة (ATS) وتقديم اقتراحات دقيقة لزيادة فرص قبولك.",
+      aEn: "Khabir is an AI-powered resume analysis and improvement platform. It compares your resume against Applicant Tracking Systems (ATS) requirements and provides precise suggestions to increase your chances of being hired."
+    },
+    {
+      qAr: "هل السير الذاتية آمنة ومحمية؟",
+      qEn: "Are resumes safe and secure?",
+      aAr: "نعم، نحن نولي خصوصيتك أولوية قصوى. لا يتم مشاركة سيرتك الذاتية مع أي طرف ثالث ويتم حذف الملفات من خوادمنا بعد انتهاء التحليل.",
+      aEn: "Yes, we prioritize your privacy. Your resume is never shared with third parties and files are deleted from our servers after analysis."
+    },
+    {
+      qAr: "هل يدعم النظام اللغتين العربية والإنجليزية؟",
+      qEn: "Does the system support Arabic and English?",
+      aAr: "بالتأكيد. خبير مصمم خصيصاً للتعامل مع السير الذاتية باللغتين العربية والإنجليزية بكفاءة عالية، مع القدرة على الترجمة الفورية بينهما.",
+      aEn: "Absolutely. Khabir is specifically designed to handle both Arabic and English resumes with high accuracy, including instant translation capabilities."
+    },
+    {
+      qAr: "ما هي نسبة التوافق (ATS Match Rate)؟",
+      qEn: "What is the ATS Match Rate?",
+      aAr: "هي نسبة مئوية توضح مدى تطابق المهارات والخبرات المكتوبة في سيرتك الذاتية مع الكلمات المفتاحية الموجودة في الوصف الوظيفي للمنصب الذي تتقدم إليه.",
+      aEn: "It is a percentage that shows how well the skills and experiences in your resume match the keywords found in the job description of the position you're applying for."
+    },
+    {
+      qAr: "هل يمكنني تصدير السيرة الذاتية بتنسيق PDF؟",
+      qEn: "Can I export the resume in PDF format?",
+      aAr: "نعم، يمكنك استخدام المحرر المدمج لتعديل سيرتك الذاتية واختيار أحد القوالب الاحترافية ثم تصديرها كملف PDF جاهز للتقديم.",
+      aEn: "Yes, you can use the built-in editor to modify your resume, choose a professional template, and export it as a ready-to-submit PDF."
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background font-sans pb-24">
+    <div className="min-h-screen bg-muted/20 font-sans pb-24">
       <Navbar />
-      
-      <main className="container mx-auto px-4 py-16 max-w-4xl">
-        <motion.div
+      <main className="container px-4 mx-auto py-12 max-w-4xl">
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          className="text-center mb-16 pt-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6">
-            <HelpCircle className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              {isRtl ? "مركز المساعدة" : "Help Center"}
-            </span>
+          <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
+            <HelpCircle className="w-10 h-10 text-primary -rotate-3" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-heading font-bold mb-6">
-            {isRtl ? "الأسئلة الشائعة" : "Frequently Asked Questions"}
+          <h1 className="text-4xl md:text-5xl font-heading font-black mb-6 tracking-tight">
+            {isRtl ? "كيف يمكننا مساعدتك؟" : "How can we help you?"}
           </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             {isRtl 
-              ? "كل ما تحتاج معرفته عن أنظمة الـ ATS وكيفية استخدام خبير للنجاح المهني."
-              : "Everything you need to know about ATS systems and how to use Khabir for career success."}
+              ? "إجابات على الأسئلة الأكثر شيوعاً حول خبير وكيفية الاستفادة القصوى من خدماتنا."
+              : "Answers to the most frequently asked questions about Khabir and how to make the most of our services."}
           </p>
         </motion.div>
 
-        <Card className="border-primary/5 shadow-2xl bg-card/50 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12">
+        <div className="bg-card border shadow-xl shadow-primary/5 rounded-[2.5rem] p-8 md:p-12 mb-12">
           <Accordion type="single" collapsible className="w-full space-y-4">
-            {faqData.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <AccordionItem 
-                  key={item.id} 
-                  value={item.id}
-                  className="border-b border-primary/5 last:border-0 pb-2"
-                >
-                  <AccordionTrigger className="hover:no-underline py-6">
-                    <div className="flex items-center gap-4 text-right">
-                      <div className="p-3 bg-primary/5 rounded-2xl group-hover:bg-primary/10 transition-colors">
-                        <Icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <span className="text-lg font-bold">
-                        {isRtl ? item.questionAr : item.questionEn}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-lg leading-relaxed pt-2 pb-6 px-16">
-                    {isRtl ? item.answerAr : item.answerEn}
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
+            {faqs.map((faq, index) => (
+              <AccordionItem key={index} value={`item-${index}`} className="border rounded-2xl px-6 bg-background data-[state=open]:border-primary/50 data-[state=open]:shadow-sm transition-all">
+                <AccordionTrigger className="hover:no-underline font-bold text-lg py-6 text-left [&[data-state=open]]:text-primary transition-colors">
+                  {isRtl ? faq.qAr : faq.qEn}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed text-base pb-6 pt-0">
+                  {isRtl ? faq.aAr : faq.aEn}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
-        </Card>
+        </div>
 
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          className="mt-16 p-8 rounded-[2rem] bg-primary/5 border border-primary/10 text-center"
-        >
-          <h3 className="text-xl font-bold mb-4">
-            {isRtl ? "لم تجد إجابتك؟" : "Didn't find your answer?"}
-          </h3>
-          <p className="text-muted-foreground mb-6">
-            {isRtl 
-              ? "فريق الدعم لدينا متاح دائماً لمساعدتك في رحلتك المهنية."
-              : "Our support team is always available to help you on your career journey."}
-          </p>
-          <Button variant="outline" className="rounded-xl px-8 border-primary/20 hover:bg-primary/10">
-            {isRtl ? "تواصل معنا" : "Contact Support"}
-          </Button>
-        </motion.div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-primary/5 border border-primary/10 rounded-[2rem] p-8 text-center flex flex-col items-center">
+            <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center shadow-sm mb-4">
+              <MessageSquare className="w-5 h-5 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">{isRtl ? "تحتاج مساعدة إضافية؟" : "Need more help?"}</h3>
+            <p className="text-muted-foreground text-sm mb-6 flex-1">
+              {isRtl ? "تحدث مع خبير الذكاء الاصطناعي للحصول على نصائح مخصصة." : "Talk to our AI expert for personalized advice."}
+            </p>
+            <Button variant="outline" className="rounded-full w-full font-bold border-primary/20 hover:bg-primary/10">
+              {isRtl ? "ابدأ المحادثة" : "Start Chat"}
+            </Button>
+          </div>
+          
+          <div className="bg-secondary/50 border rounded-[2rem] p-8 text-center flex flex-col items-center">
+            <div className="w-12 h-12 bg-background rounded-full flex items-center justify-center shadow-sm mb-4">
+              <Mail className="w-5 h-5 text-foreground" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">{isRtl ? "تواصل معنا" : "Contact Us"}</h3>
+            <p className="text-muted-foreground text-sm mb-6 flex-1">
+              {isRtl ? "فريق الدعم متاح للرد على استفساراتك عبر البريد الإلكتروني." : "Our support team is available to answer your email inquiries."}
+            </p>
+            <Button variant="secondary" className="rounded-full w-full font-bold shadow-sm">
+              {isRtl ? "إرسال بريد" : "Send Email"}
+            </Button>
+          </div>
+        </div>
       </main>
     </div>
   );

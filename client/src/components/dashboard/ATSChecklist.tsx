@@ -1,56 +1,53 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
-interface CheckItem {
-  labelEn: string;
-  labelAr: string;
-  status: 'pass' | 'fail' | 'warn';
-}
-
-interface ATSChecklistProps {
-  data?: CheckItem[];
-}
-
-const defaultChecks: CheckItem[] = [
-  { labelEn: "File Format (PDF)", labelAr: "تنسيق الملف (PDF)", status: 'pass' },
-  { labelEn: "Text Selectable", labelAr: "النص قابل للتحديد", status: 'pass' },
-  { labelEn: "Contact Info Found", labelAr: "معلومات الاتصال موجودة", status: 'pass' },
-  { labelEn: "Section Headers", labelAr: "عناوين الأقسام", status: 'pass' },
-  { labelEn: "No Graphics/Tables", labelAr: "لا توجد رسومات/جداول", status: 'warn' },
-  { labelEn: "Date Formatting", labelAr: "تنسيق التاريخ", status: 'fail' },
-];
-
-export function ATSChecklist({ data }: ATSChecklistProps) {
+export function ATSChecklist({ data }: { data?: any[] }) {
   const [isRtl, setIsRtl] = useState(false);
 
   useEffect(() => {
     setIsRtl(document.documentElement.dir === 'rtl');
+    const observer = new MutationObserver(() => {
+      setIsRtl(document.documentElement.dir === 'rtl');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+    return () => observer.disconnect();
   }, []);
 
-  const checks = data || defaultChecks;
+  if (!data) return null;
+
+  const getIcon = (status: string) => {
+    switch (status) {
+      case 'pass': return <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />;
+      case 'fail': return <XCircle className="h-5 w-5 text-red-500 shrink-0" />;
+      case 'warn': return <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />;
+      default: return null;
+    }
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {isRtl ? "توافق ATS" : "ATS Compatibility"}
-          <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700">
-            {isRtl ? "تحذير" : "Warning"}
-          </span>
+    <Card className="border shadow-sm rounded-3xl overflow-hidden">
+      <CardHeader className="bg-secondary/50 border-b border-border/50 pb-4">
+        <CardTitle className="text-xl font-bold font-heading">
+          {isRtl ? "فحص التوافق مع ATS" : "ATS Compatibility Check"}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid gap-3">
-          {checks.map((check, i) => (
-            <div key={i} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
-              <span className="text-sm font-medium text-foreground/80">
-                {isRtl ? check.labelAr : check.labelEn}
+      <CardContent className="p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {data.map((item, i) => (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.05 }}
+              key={i} 
+              className="flex items-center gap-3 p-4 rounded-2xl bg-secondary/30 border border-border/50 hover:bg-secondary transition-colors"
+            >
+              {getIcon(item.status)}
+              <span className="text-sm font-semibold">
+                {isRtl ? item.labelAr : item.labelEn}
               </span>
-              {check.status === 'pass' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
-              {check.status === 'fail' && <XCircle className="h-5 w-5 text-red-500" />}
-              {check.status === 'warn' && <AlertCircle className="h-5 w-5 text-yellow-500" />}
-            </div>
+            </motion.div>
           ))}
         </div>
       </CardContent>
