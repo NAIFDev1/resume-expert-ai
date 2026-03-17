@@ -40,13 +40,13 @@ export function ATSChecklist({ data }: ATSChecklistProps) {
   const checks = data || defaultChecks;
 
   return (
-    <Card className="border-0 shadow-none bg-transparent h-full flex flex-col overflow-hidden">
-      <CardHeader className="px-6 pt-6 pb-4 shrink-0 border-b border-border/50">
+    <Card className="border-0 shadow-none bg-transparent flex flex-col h-full max-h-full overflow-hidden w-full">
+      <CardHeader className="px-6 pt-6 pb-4 border-b border-border/50 shrink-0">
         <CardTitle className="text-lg font-bold flex items-center gap-2">
           {isRtl ? "فحص التوافقية (ATS)" : "ATS Compatibility"}
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-6 py-4 flex-1 overflow-y-auto custom-scrollbar">
+      <CardContent className="px-6 py-6 flex-1 overflow-y-auto custom-scrollbar min-h-0">
         <div className="space-y-4">
           {checks.map((check) => (
             <div key={check.id} className="flex items-start gap-3.5 p-4 rounded-2xl bg-secondary/30 border border-transparent hover:border-border transition-colors">
@@ -55,7 +55,7 @@ export function ATSChecklist({ data }: ATSChecklistProps) {
                 {check.status === "fail" && <XCircle className="h-5 w-5 text-destructive" />}
                 {check.status === "warning" && <AlertTriangle className="h-5 w-5 text-amber-500" />}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h4 className="font-semibold text-foreground text-sm truncate">
                   {isRtl ? check.nameAr : check.nameEn}
                 </h4>

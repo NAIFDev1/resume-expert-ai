@@ -61,14 +61,14 @@ export function ImprovementSuggestions({ data }: ImprovementSuggestionsProps) {
   const suggestions = data || defaultSuggestions;
 
   return (
-    <Card className="border-0 shadow-none bg-transparent h-full flex flex-col overflow-hidden">
-      <CardHeader className="px-6 pt-6 pb-4 shrink-0 border-b border-border/50">
+    <Card className="border-0 shadow-none bg-transparent flex flex-col h-full max-h-full overflow-hidden w-full">
+      <CardHeader className="px-6 pt-6 pb-4 border-b border-border/50 shrink-0">
         <CardTitle className="text-lg font-bold flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-blue-500" />
-          {isRtl ? "تحسينات الذكاء الاصطناعي" : "AI Improvements"}
+          <Sparkles className="h-5 w-5 text-blue-500 shrink-0" />
+          <span className="truncate">{isRtl ? "تحسينات الذكاء الاصطناعي" : "AI Improvements"}</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-6 py-4 flex-1 overflow-y-auto custom-scrollbar space-y-6">
+      <CardContent className="px-6 py-6 flex-1 overflow-y-auto custom-scrollbar min-h-0 space-y-6">
         {suggestions.map((suggestion) => (
           <div key={suggestion.id} className="space-y-3 p-5 rounded-2xl bg-secondary/30 border border-transparent hover:border-border transition-colors">
             <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">

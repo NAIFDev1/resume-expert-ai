@@ -1,4 +1,3 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip } from "recharts";
 import { useState, useEffect } from "react";
 
@@ -39,40 +38,33 @@ export function SkillsRadar({ data }: SkillsRadarProps) {
   }));
 
   return (
-    <Card className="border-0 shadow-none bg-transparent h-full flex flex-col">
-      <CardHeader className="px-8 pt-8 pb-0">
-        <CardTitle className="text-xl font-bold">
-          {isRtl ? "تحليل المهارات" : "Skills Analysis"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-0 flex-1 min-h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="65%" data={chartData}>
-            <PolarGrid stroke="hsl(var(--border))" />
-            <PolarAngleAxis 
-              dataKey="subject" 
-              tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 600 }}
-            />
-            <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-            <Radar
-              name="Skills"
-              dataKey="score"
-              stroke="hsl(var(--primary))"
-              fill="hsl(var(--primary))"
-              fillOpacity={0.2}
-            />
-            <Tooltip 
-              contentStyle={{ 
-                borderRadius: '1rem', 
-                border: '1px solid hsl(var(--border))',
-                backgroundColor: 'hsl(var(--card))',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.05)',
-                fontWeight: 600
-              }}
-            />
-          </RadarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <div className="w-full h-full min-h-[250px] max-h-full flex items-center justify-center">
+      <ResponsiveContainer width="100%" height="100%">
+        <RadarChart cx="50%" cy="50%" outerRadius="65%" data={chartData}>
+          <PolarGrid stroke="hsl(var(--border))" />
+          <PolarAngleAxis 
+            dataKey="subject" 
+            tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 600 }}
+          />
+          <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+          <Radar
+            name="Skills"
+            dataKey="score"
+            stroke="hsl(var(--primary))"
+            fill="hsl(var(--primary))"
+            fillOpacity={0.2}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              borderRadius: '1rem', 
+              border: '1px solid hsl(var(--border))',
+              backgroundColor: 'hsl(var(--card))',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.05)',
+              fontWeight: 600
+            }}
+          />
+        </RadarChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

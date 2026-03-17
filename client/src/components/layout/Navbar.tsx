@@ -21,7 +21,7 @@ export function Navbar() {
     document.documentElement.dir = "rtl";
     document.documentElement.lang = "ar";
     
-    return scrollY.onChange((latest) => {
+    return scrollY.on("change", (latest) => {
       setIsScrolled(latest > 20);
     });
   }, [scrollY]);
@@ -43,29 +43,29 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link href="/">
-            <a className="font-heading text-3xl font-bold flex items-center gap-2">
+            <div className="font-heading text-3xl font-bold flex items-center gap-2 cursor-pointer">
               <div className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center">
                 <span className="text-background text-xl">خ</span>
               </div>
               <span className="text-foreground">خبير</span>
-            </a>
+            </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/">
-              <a className="text-sm font-bold text-foreground hover:text-foreground transition-colors font-sans">
+              <span className="text-sm font-bold text-foreground hover:text-foreground transition-colors font-sans cursor-pointer">
                 {lang === "ar" ? "الرئيسية" : "Home"}
-              </a>
+              </span>
             </Link>
             <Link href="/templates">
-              <a className="text-sm font-bold text-foreground hover:text-foreground transition-colors font-sans">
+              <span className="text-sm font-bold text-foreground hover:text-foreground transition-colors font-sans cursor-pointer">
                 {lang === "ar" ? "النماذج" : "Templates"}
-              </a>
+              </span>
             </Link>
             <Link href="/faq">
-              <a className="text-sm font-bold text-foreground hover:text-foreground transition-colors font-sans">
+              <span className="text-sm font-bold text-foreground hover:text-foreground transition-colors font-sans cursor-pointer">
                 {lang === "ar" ? "الأسئلة الشائعة" : "FAQ"}
-              </a>
+              </span>
             </Link>
           </nav>
         </div>
@@ -107,9 +107,9 @@ export function Navbar() {
           <div className="h-5 w-[1px] bg-border mx-1 hidden sm:block" />
 
           <Link href="/login">
-            <a className="text-sm font-bold text-foreground hover:text-foreground transition-colors hidden sm:block px-3 font-sans">
+            <span className="text-sm font-bold text-foreground hover:text-foreground transition-colors hidden sm:block px-3 font-sans cursor-pointer">
               {lang === "ar" ? "تسجيل الدخول" : "Log in"}
-            </a>
+            </span>
           </Link>
           
           <Link href="/#upload">

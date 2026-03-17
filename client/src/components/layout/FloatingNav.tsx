@@ -40,8 +40,8 @@ export function FloatingNav() {
 
           return (
             <Link key={item.href} href={item.href}>
-              <a 
-                className="relative flex items-center justify-center px-4 py-3 rounded-full transition-colors outline-none font-sans"
+              <div 
+                className="relative flex items-center justify-center px-4 py-3 rounded-full transition-colors outline-none font-sans cursor-pointer"
                 onMouseEnter={() => setHoveredTab(item.href)}
                 onMouseLeave={() => setHoveredTab(null)}
               >
@@ -90,7 +90,7 @@ export function FloatingNav() {
                     {isRtl ? item.labelAr : item.labelEn}
                   </motion.span>
                 </div>
-              </a>
+              </div>
             </Link>
           );
         })}
