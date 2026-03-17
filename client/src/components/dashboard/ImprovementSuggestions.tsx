@@ -1,16 +1,16 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 interface Suggestion {
   id: string;
-  categoryEn: string;
-  categoryAr: string;
-  currentEn: string;
-  currentAr: string;
-  suggestionEn: string;
-  suggestionAr: string;
-  impact: "high" | "medium" | "low";
+  sectionEn: string;
+  sectionAr: string;
+  originalEn: string;
+  originalAr: string;
+  improvedEn: string;
+  improvedAr: string;
 }
 
 interface ImprovementSuggestionsProps {
@@ -31,74 +31,77 @@ export function ImprovementSuggestions({ data }: ImprovementSuggestionsProps) {
   const defaultSuggestions: Suggestion[] = [
     {
       id: "1",
-      categoryEn: "Experience",
-      categoryAr: "الخبرة",
-      currentEn: "Developed web applications",
-      currentAr: "تطوير تطبيقات الويب",
-      suggestionEn: "Developed scalable web applications using React, resulting in 30% faster load times.",
-      suggestionAr: "تطوير تطبيقات ويب قابلة للتوسع باستخدام React، مما أدى لزيادة سرعة التحميل بنسبة 30٪.",
-      impact: "high"
+      sectionEn: "Summary",
+      sectionAr: "الملخص",
+      originalEn: "Hardworking developer looking for a job.",
+      originalAr: "مطور مجتهد يبحث عن عمل.",
+      improvedEn: "Results-driven Software Engineer with 3+ years of experience building scalable web applications.",
+      improvedAr: "مهندس برمجيات موجه نحو النتائج بخبرة تزيد عن 3 سنوات في بناء تطبيقات ويب قابلة للتوسع."
     },
     {
       id: "2",
-      categoryEn: "Summary",
-      categoryAr: "الملخص",
-      currentEn: "Hardworking software engineer looking for a job.",
-      currentAr: "مهندس برمجيات مجتهد يبحث عن عمل.",
-      suggestionEn: "Results-driven Software Engineer with 5+ years of experience in full-stack development.",
-      suggestionAr: "مهندس برمجيات يركز على النتائج بخبرة تزيد عن 5 سنوات في تطوير الأنظمة المتكاملة.",
-      impact: "medium"
+      sectionEn: "Experience",
+      sectionAr: "الخبرة",
+      originalEn: "Made the website faster.",
+      originalAr: "قمت بجعل الموقع أسرع.",
+      improvedEn: "Optimized frontend assets reducing page load time by 40% and increasing conversion rate.",
+      improvedAr: "تحسين أصول الواجهة الأمامية مما أدى لتقليل وقت تحميل الصفحة بنسبة 40٪ وزيادة معدل التحويل."
+    },
+    {
+      id: "3",
+      sectionEn: "Education",
+      sectionAr: "التعليم",
+      originalEn: "Finished college with good grades.",
+      originalAr: "أنهيت الجامعة بدرجات جيدة.",
+      improvedEn: "Graduated with Honors, consistently maintaining top 10% academic standing in cohort.",
+      improvedAr: "تخرجت بمرتبة الشرف، مع الحفاظ باستمرار على التواجد ضمن أفضل 10٪ في الدفعة أكاديمياً."
     }
   ];
 
   const suggestions = data || defaultSuggestions;
 
   return (
-    <Card className="border-0 shadow-none bg-transparent h-full flex flex-col">
-      <CardHeader className="px-8 pt-8 pb-4">
-        <CardTitle className="flex items-center gap-3 text-xl font-bold">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-primary" />
-          </div>
-          {isRtl ? "اقتراحات التحسين المدعومة بالذكاء الاصطناعي" : "AI Improvement Suggestions"}
+    <Card className="border-0 shadow-none bg-transparent h-full flex flex-col overflow-hidden">
+      <CardHeader className="px-6 pt-6 pb-4 shrink-0 border-b border-border/50">
+        <CardTitle className="text-lg font-bold flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-blue-500" />
+          {isRtl ? "تحسينات الذكاء الاصطناعي" : "AI Improvements"}
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-8 pb-8 flex-1">
-        <div className="space-y-6">
-          {suggestions.map((suggestion) => (
-            <div key={suggestion.id} className="relative group">
-              <div className="absolute left-0 top-4 bottom-4 w-1 bg-border rounded-full" />
-              <div className="pl-6 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                    {isRtl ? suggestion.categoryAr : suggestion.categoryEn}
-                  </span>
-                  <span className={`text-xs px-2 py-1 rounded-md font-bold ${
-                    suggestion.impact === 'high' ? 'bg-green-500/10 text-green-600' :
-                    suggestion.impact === 'medium' ? 'bg-amber-500/10 text-amber-600' :
-                    'bg-blue-500/10 text-blue-600'
-                  }`}>
-                    {suggestion.impact.toUpperCase()} IMPACT
-                  </span>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="p-4 bg-destructive/5 rounded-2xl border border-destructive/10">
-                    <p className="text-sm text-foreground/70 line-through decoration-destructive/40 font-medium">
-                      {isRtl ? suggestion.currentAr : suggestion.currentEn}
-                    </p>
-                  </div>
-                  
-                  <div className="p-4 bg-green-500/10 rounded-2xl border border-green-500/20">
-                    <p className="text-sm font-semibold text-green-700 dark:text-green-400">
-                      {isRtl ? suggestion.suggestionAr : suggestion.suggestionEn}
-                    </p>
-                  </div>
+      <CardContent className="px-6 py-4 flex-1 overflow-y-auto custom-scrollbar space-y-6">
+        {suggestions.map((suggestion) => (
+          <div key={suggestion.id} className="space-y-3 p-5 rounded-2xl bg-secondary/30 border border-transparent hover:border-border transition-colors">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+              {isRtl ? suggestion.sectionAr : suggestion.sectionEn}
+            </h4>
+            
+            <div className="space-y-3">
+              <div className="bg-destructive/5 border border-destructive/10 p-3 rounded-xl">
+                <p className="text-sm font-medium text-destructive/80 line-through decoration-destructive/30 leading-relaxed">
+                  {isRtl ? suggestion.originalAr : suggestion.originalEn}
+                </p>
+              </div>
+              
+              <div className="flex justify-center">
+                <div className="bg-background rounded-full p-1.5 border shadow-sm shrink-0">
+                  <ArrowRight className={`h-3.5 w-3.5 text-muted-foreground ${isRtl ? 'rotate-180' : ''}`} />
                 </div>
               </div>
+
+              <div className="bg-primary/5 border border-primary/10 p-3 rounded-xl">
+                <p className="text-sm font-bold text-primary leading-relaxed">
+                  {isRtl ? suggestion.improvedAr : suggestion.improvedEn}
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
+            
+            <div className="pt-2 flex justify-end">
+              <Button size="sm" variant="outline" className="rounded-lg text-xs font-bold h-8 border-border hover:bg-background shadow-sm">
+                {isRtl ? "تطبيق التعديل" : "Apply Change"}
+              </Button>
+            </div>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );
