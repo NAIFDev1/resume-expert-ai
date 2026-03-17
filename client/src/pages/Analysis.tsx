@@ -76,7 +76,7 @@ export default function Analysis() {
     <div className="min-h-screen bg-secondary/10 font-sans selection:bg-primary selection:text-primary-foreground pb-20">
       <Navbar />
 
-      <main className="max-w-[1600px] px-4 md:px-6 mx-auto pt-28 lg:pt-32">
+      <main className="max-w-[1600px] px-4 md:px-6 mx-auto pt-40 lg:pt-48">
         <AnimatePresence>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

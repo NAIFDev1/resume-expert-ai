@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout, Wand2, Loader2, Languages } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useReactToPrint } from "react-to-print";
 
 export default function Editor() {
@@ -121,7 +121,7 @@ export default function Editor() {
   ];
 
   return (
-    <div className="min-h-screen bg-secondary/10 font-sans flex flex-col pt-24 pb-12">
+    <div className="min-h-screen bg-secondary/10 font-sans flex flex-col pt-40 lg:pt-48 pb-12">
       <Navbar />
       
       <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-6 h-full flex flex-col">
@@ -201,7 +201,6 @@ export default function Editor() {
                   </TabsList>
 
                   <div className="min-h-[420px]">
-                    <AnimatePresence mode="wait">
                       <TabsContent value="personal" className="space-y-5 mt-0 outline-none">
                         <div className="space-y-4">
                           <div className="space-y-2">
@@ -247,7 +246,6 @@ export default function Editor() {
                           <Textarea name="education" value={resumeData.education} onChange={handleInputChange} className="min-h-[280px] flex-1 bg-secondary/30 border-border/50 rounded-xl resize-none font-medium p-4 leading-relaxed focus-visible:ring-primary/20" />
                         </div>
                       </TabsContent>
-                    </AnimatePresence>
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row gap-3">
