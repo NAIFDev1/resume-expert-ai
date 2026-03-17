@@ -33,7 +33,6 @@ export default function Editor() {
       const isCurrentlyAr = /[\u0600-\u06FF]/.test(resumeData.fullName);
       
       if (isCurrentlyAr) {
-        // Translate to EN
         setResumeData({
           fullName: "Ahmed Mohamed",
           jobTitle: "Software Developer",
@@ -44,7 +43,6 @@ export default function Editor() {
           education: "Bachelor of Computer Science - King Saud University (2021)",
         });
       } else {
-        // Translate to AR
         setResumeData({
           fullName: "أحمد محمد",
           jobTitle: "مطور برمجيات",
@@ -90,7 +88,6 @@ export default function Editor() {
     const observer = new MutationObserver(checkLang);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
     
-    // Check for template in URL
     const params = new URLSearchParams(window.location.search);
     const templateId = params.get('template');
     if (templateId && templates.some(t => t.id === templateId)) {
@@ -119,63 +116,66 @@ export default function Editor() {
 
   const templates = [
     { id: "classic", name: isRtl ? "كلاسيكي" : "Classic" },
-    { id: "modern", name: isRtl ? "مودرن" : "Modern" },
-    { id: "minimal", name: isRtl ? "مينيمال" : "Minimal" },
+    { id: "modern", name: isRtl ? "عصري" : "Modern" },
+    { id: "minimal", name: isRtl ? "بسيط" : "Minimal" },
   ];
 
   return (
-    <div className="min-h-screen bg-background font-sans pb-24">
+    <div className="min-h-screen bg-secondary/10 font-sans flex flex-col pt-24 pb-12">
       <Navbar />
-      <main className="container px-4 mx-auto py-8">
-        <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-160px)]">
+      
+      <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-6 h-full flex flex-col">
+        <div className="flex flex-col lg:flex-row gap-6 h-full min-h-[calc(100vh-140px)]">
+          
           {/* Editor Side */}
-          <div className="w-full lg:w-2/5 overflow-y-auto pr-2 custom-scrollbar">
-            <Card className="border shadow-xl bg-card rounded-[2rem] sticky top-0">
-              <CardHeader className="border-b pb-4">
-                <CardTitle className="flex items-center justify-between text-xl font-bold font-heading">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5" />
-                    {isRtl ? "محرر خبير الذكي" : "Khabir Smart Editor"}
+          <div className="w-full lg:w-1/3 flex flex-col h-[800px] lg:h-full shrink-0">
+            <Card className="h-full flex flex-col shadow-soft-lg border-0 rounded-3xl overflow-hidden bg-card">
+              <CardHeader className="border-b bg-background/95 backdrop-blur-md px-6 py-5 z-10 shrink-0">
+                <CardTitle className="flex flex-col gap-5 text-xl font-bold font-heading">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 text-primary">
+                      <Sparkles className="h-6 w-6 text-blue-500" />
+                      {isRtl ? "محرر خبير" : "Khabir Editor"}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="grid grid-cols-2 gap-3 w-full">
                     <Button 
                       variant="outline" 
-                      size="sm" 
-                      className="rounded-xl border font-bold gap-2"
+                      className="rounded-xl border-border font-semibold shadow-sm hover:bg-secondary/50 flex gap-2 h-11"
                       onClick={translateResume}
                       disabled={isTranslating}
                     >
-                      {isTranslating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Languages className="h-4 w-4" />}
-                      {isRtl ? "ترجمة" : "Translate"}
+                      {isTranslating ? <Loader2 className="h-4 w-4 animate-spin shrink-0" /> : <Languages className="h-4 w-4 shrink-0" />}
+                      <span className="truncate">{isRtl ? "ترجمة للإنجليزية" : "Translate"}</span>
                     </Button>
                     <Button 
                       variant="outline" 
-                      size="sm" 
-                      className="rounded-xl border font-bold gap-2"
+                      className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 font-semibold shadow-sm flex gap-2 h-11"
                       onClick={improveContent}
                       disabled={isImproving}
                     >
-                      {isImproving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                      {isRtl ? "تحسين" : "Improve"}
+                      {isImproving ? <Loader2 className="h-4 w-4 animate-spin shrink-0" /> : <Wand2 className="h-4 w-4 shrink-0" />}
+                      <span className="truncate">{isRtl ? "تحسين بالذكاء" : "AI Improve"}</span>
                     </Button>
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="mb-6 space-y-3">
-                  <label className="text-sm font-bold flex items-center gap-2">
+              
+              <CardContent className="flex-1 overflow-y-auto p-5 md:p-6 custom-scrollbar bg-background">
+                <div className="mb-8 space-y-3">
+                  <label className="text-sm font-semibold flex items-center gap-2 text-muted-foreground">
                     <Layout className="h-4 w-4" />
                     {isRtl ? "اختر القالب" : "Choose Template"}
                   </label>
-                  <div className="flex gap-2 p-1 bg-background rounded-xl border">
+                  <div className="grid grid-cols-3 gap-2 p-1.5 bg-secondary/50 rounded-2xl border border-border/50">
                     {templates.map(t => (
                       <button
                         key={t.id}
                         onClick={() => setActiveTemplate(t.id)}
-                        className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all ${
+                        className={`py-2 px-1 text-sm font-semibold rounded-xl transition-all ${
                           activeTemplate === t.id 
-                            ? "bg-foreground text-background shadow-sm" 
-                            : "hover:bg-background text-foreground"
+                            ? "bg-background text-foreground shadow-sm border border-border" 
+                            : "hover:bg-background/50 text-muted-foreground border border-transparent"
                         }`}
                       >
                         {t.name}
@@ -185,73 +185,77 @@ export default function Editor() {
                 </div>
 
                 <Tabs defaultValue="personal" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-6 bg-background p-1 rounded-xl h-12 border">
-                    <TabsTrigger value="personal" className="rounded-lg font-bold data-[state=active]:bg-foreground data-[state=active]:text-background">
-                      <User className="h-4 w-4 md:mr-2" />
-                      <span className="hidden md:inline">{isRtl ? "الشخصية" : "Personal"}</span>
+                  <TabsList className="grid w-full grid-cols-3 mb-6 bg-secondary/50 p-1.5 rounded-2xl h-auto border border-border/50">
+                    <TabsTrigger value="personal" className="rounded-xl py-2.5 text-sm font-semibold data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center justify-center gap-2">
+                      <User className="h-4 w-4" />
+                      <span className="hidden sm:inline">{isRtl ? "الشخصية" : "Personal"}</span>
                     </TabsTrigger>
-                    <TabsTrigger value="experience" className="rounded-lg font-bold data-[state=active]:bg-foreground data-[state=active]:text-background">
-                      <Briefcase className="h-4 w-4 md:mr-2" />
-                      <span className="hidden md:inline">{isRtl ? "الخبرة" : "Experience"}</span>
+                    <TabsTrigger value="experience" className="rounded-xl py-2.5 text-sm font-semibold data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center justify-center gap-2">
+                      <Briefcase className="h-4 w-4" />
+                      <span className="hidden sm:inline">{isRtl ? "الخبرة" : "Experience"}</span>
                     </TabsTrigger>
-                    <TabsTrigger value="education" className="rounded-lg font-bold data-[state=active]:bg-foreground data-[state=active]:text-background">
-                      <GraduationCap className="h-4 w-4 md:mr-2" />
-                      <span className="hidden md:inline">{isRtl ? "التعليم" : "Education"}</span>
+                    <TabsTrigger value="education" className="rounded-xl py-2.5 text-sm font-semibold data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center justify-center gap-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span className="hidden sm:inline">{isRtl ? "التعليم" : "Education"}</span>
                     </TabsTrigger>
                   </TabsList>
 
-                  <AnimatePresence mode="wait">
-                    <TabsContent value="personal" className="space-y-4 mt-0">
-                      <div className="grid grid-cols-1 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-sm font-bold">{isRtl ? "الاسم الكامل" : "Full Name"}</label>
-                          <Input name="fullName" value={resumeData.fullName} onChange={handleInputChange} className="bg-background rounded-xl h-12 font-bold" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-bold">{isRtl ? "المسمى الوظيفي" : "Job Title"}</label>
-                          <Input name="jobTitle" value={resumeData.jobTitle} onChange={handleInputChange} className="bg-background rounded-xl h-12 font-bold" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+                  <div className="min-h-[420px]">
+                    <AnimatePresence mode="wait">
+                      <TabsContent value="personal" className="space-y-5 mt-0 outline-none">
+                        <div className="space-y-4">
                           <div className="space-y-2">
-                            <label className="text-sm font-bold">{isRtl ? "البريد الإلكتروني" : "Email"}</label>
-                            <Input name="email" value={resumeData.email} onChange={handleInputChange} className="bg-background rounded-xl h-12 font-bold font-sans" dir="ltr" />
+                            <label className="text-sm font-semibold text-foreground">{isRtl ? "الاسم الكامل" : "Full Name"}</label>
+                            <Input name="fullName" value={resumeData.fullName} onChange={handleInputChange} className="bg-secondary/30 border-border/50 rounded-xl h-11 font-medium focus-visible:ring-primary/20" />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-sm font-bold">{isRtl ? "رقم الجوال" : "Phone"}</label>
-                            <Input name="phone" value={resumeData.phone} onChange={handleInputChange} className="bg-background rounded-xl h-12 font-bold font-sans" dir="ltr" />
+                            <label className="text-sm font-semibold text-foreground">{isRtl ? "المسمى الوظيفي" : "Job Title"}</label>
+                            <Input name="jobTitle" value={resumeData.jobTitle} onChange={handleInputChange} className="bg-secondary/30 border-border/50 rounded-xl h-11 font-medium focus-visible:ring-primary/20" />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-foreground">{isRtl ? "البريد الإلكتروني" : "Email"}</label>
+                              <Input name="email" value={resumeData.email} onChange={handleInputChange} className="bg-secondary/30 border-border/50 rounded-xl h-11 font-medium text-left focus-visible:ring-primary/20" dir="ltr" />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-foreground">{isRtl ? "رقم الجوال" : "Phone"}</label>
+                              <Input name="phone" value={resumeData.phone} onChange={handleInputChange} className="bg-secondary/30 border-border/50 rounded-xl h-11 font-medium text-left focus-visible:ring-primary/20" dir="ltr" />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-semibold text-foreground">{isRtl ? "نبذة تعريفية" : "Summary"}</label>
+                            <Textarea name="summary" value={resumeData.summary} onChange={handleInputChange} className="min-h-[140px] bg-secondary/30 border-border/50 rounded-xl resize-none font-medium leading-relaxed p-4 focus-visible:ring-primary/20" />
                           </div>
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-bold">{isRtl ? "نبذة تعريفية" : "Summary"}</label>
-                          <Textarea name="summary" value={resumeData.summary} onChange={handleInputChange} className="min-h-[120px] bg-background rounded-xl resize-none font-bold leading-relaxed p-4" />
+                      </TabsContent>
+
+                      <TabsContent value="experience" className="space-y-5 mt-0 outline-none">
+                        <div className="space-y-2 flex flex-col h-full">
+                          <label className="text-sm font-semibold text-foreground flex flex-col sm:flex-row justify-between gap-1 shrink-0 mb-1">
+                            <span>{isRtl ? "تفاصيل الخبرة المهنية" : "Professional Experience"}</span>
+                            <span className="text-xs text-muted-foreground font-normal">
+                              {isRtl ? "* استخدم النقاط (-) للتنظيم" : "* Use bullet points (-)"}
+                            </span>
+                          </label>
+                          <Textarea name="experience" value={resumeData.experience} onChange={handleInputChange} className="min-h-[380px] flex-1 bg-secondary/30 border-border/50 rounded-xl resize-none font-medium text-sm leading-relaxed p-4 focus-visible:ring-primary/20" dir={isRtl ? "rtl" : "ltr"} />
                         </div>
-                      </div>
-                    </TabsContent>
+                      </TabsContent>
 
-                    <TabsContent value="experience" className="space-y-4 mt-0">
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold">{isRtl ? "تفاصيل الخبرة المهنية" : "Professional Experience"}</label>
-                        <Textarea name="experience" value={resumeData.experience} onChange={handleInputChange} className="min-h-[300px] bg-background rounded-xl resize-none font-bold text-sm leading-relaxed p-4 font-sans" dir={isRtl ? "rtl" : "ltr"} />
-                        <p className="text-xs text-foreground font-bold">
-                          {isRtl ? "* استخدم النقاط (-) لتنظيم مهامك" : "* Use bullet points (-) to organize tasks"}
-                        </p>
-                      </div>
-                    </TabsContent>
+                      <TabsContent value="education" className="space-y-5 mt-0 outline-none">
+                        <div className="space-y-2 flex flex-col h-full">
+                          <label className="text-sm font-semibold text-foreground shrink-0 mb-1">{isRtl ? "المؤهلات العلمية" : "Education"}</label>
+                          <Textarea name="education" value={resumeData.education} onChange={handleInputChange} className="min-h-[280px] flex-1 bg-secondary/30 border-border/50 rounded-xl resize-none font-medium p-4 leading-relaxed focus-visible:ring-primary/20" />
+                        </div>
+                      </TabsContent>
+                    </AnimatePresence>
+                  </div>
 
-                    <TabsContent value="education" className="space-y-4 mt-0">
-                      <div className="space-y-2">
-                        <label className="text-sm font-bold">{isRtl ? "المؤهلات العلمية" : "Education"}</label>
-                        <Textarea name="education" value={resumeData.education} onChange={handleInputChange} className="min-h-[200px] bg-background rounded-xl resize-none font-bold p-4 leading-relaxed" />
-                      </div>
-                    </TabsContent>
-                  </AnimatePresence>
-
-                  <div className="mt-8 flex gap-3 pt-6 border-t">
-                    <Button onClick={handleSave} className="flex-1 h-12 rounded-xl font-bold">
+                  <div className="mt-8 pt-6 border-t border-border/50 flex flex-col sm:flex-row gap-3">
+                    <Button onClick={handleSave} className="flex-1 h-12 rounded-xl font-bold shadow-sm hover:shadow-md transition-all">
                       <Save className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
-                      {isRtl ? "حفظ السيرة" : "Save Resume"}
+                      {isRtl ? "حفظ التعديلات" : "Save Changes"}
                     </Button>
-                    <Button onClick={() => handlePrint()} variant="outline" className="flex-1 h-12 rounded-xl border font-bold">
+                    <Button onClick={() => handlePrint()} variant="outline" className="flex-1 h-12 rounded-xl border-border font-bold hover:bg-secondary/50 transition-all bg-background shadow-sm">
                       <Download className={`h-4 w-4 ${isRtl ? 'ml-2' : 'mr-2'}`} />
                       {isRtl ? "تحميل PDF" : "Download PDF"}
                     </Button>
@@ -262,141 +266,145 @@ export default function Editor() {
           </div>
 
           {/* Preview Side */}
-          <div className="w-full lg:w-3/5 h-full overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between mb-4 px-2">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-foreground animate-pulse" />
+          <div className="flex-1 flex flex-col h-[800px] lg:h-full bg-background/50 backdrop-blur-sm rounded-3xl border shadow-soft p-4 md:p-6 overflow-hidden">
+            <div className="flex items-center justify-between mb-4 px-2 shrink-0">
+              <h3 className="text-sm font-bold flex items-center gap-2 text-muted-foreground tracking-widest uppercase">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
                 {isRtl ? "معاينة حية" : "Live Preview"}
               </h3>
-              <div className="flex gap-2">
-                <div className="h-8 px-3 rounded-full bg-background border flex items-center justify-center text-xs font-bold uppercase">{activeTemplate}</div>
-              </div>
+              <div className="h-7 px-3 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold uppercase tracking-wider">{activeTemplate}</div>
             </div>
             
-            <div className="flex-1 bg-background rounded-[2rem] p-4 md:p-8 overflow-y-auto border shadow-inner custom-scrollbar">
-              <div ref={componentRef}>
-                <Card className={`bg-white text-black shadow-2xl min-h-[842px] w-full max-w-[595px] mx-auto transition-all duration-300 transform origin-top ${
-                  activeTemplate === 'modern' ? 'p-0 flex overflow-hidden' : 'p-12'
-                } ${activeTemplate === 'minimal' ? 'font-sans border-t-8 border-black' : 'font-heading'}`}>
-                
-                {activeTemplate === 'classic' && (
-                  <div className="space-y-8 text-left h-full" dir="ltr">
-                    <header className="border-b-2 border-black pb-6 mb-8 text-center">
-                      <h1 className="text-4xl font-bold uppercase tracking-widest text-black mb-2 font-heading">{resumeData.fullName}</h1>
-                      <p className="font-bold tracking-wide text-lg mb-4 text-black">{resumeData.jobTitle}</p>
-                      <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 text-sm text-black font-bold font-sans">
-                        <span className="flex items-center gap-1">✉ {resumeData.email}</span>
-                        <span className="flex items-center gap-1">📞 {resumeData.phone}</span>
-                      </div>
-                    </header>
-                    <div className="space-y-8">
-                      <ResumeSections data={resumeData} />
-                    </div>
-                  </div>
-                )}
-
-                {activeTemplate === 'modern' && (
-                  <div className="flex h-full min-h-[842px]" dir="ltr">
-                    <div className="w-1/3 bg-black text-white p-8">
-                      <div className="w-24 h-24 bg-white text-black rounded-full mb-8 flex items-center justify-center text-4xl font-black mx-auto font-heading">
-                        {resumeData.fullName.charAt(0)}
-                      </div>
-                      <div className="space-y-8">
-                        <section>
-                          <h3 className="text-xs font-black uppercase mb-4 tracking-wider border-b border-white pb-2">Contact</h3>
-                          <div className="text-xs space-y-3 font-bold font-sans opacity-80">
-                            <p className="break-all">{resumeData.email}</p>
-                            <p>{resumeData.phone}</p>
-                          </div>
-                        </section>
-                        <section>
-                          <h3 className="text-xs font-black uppercase mb-4 tracking-wider border-b border-white pb-2">Education</h3>
-                          <p className="text-xs font-bold leading-relaxed whitespace-pre-line opacity-80">{resumeData.education}</p>
-                        </section>
-                      </div>
-                    </div>
-                    <div className="flex-1 p-10 text-left bg-white">
-                      <header className="mb-10">
-                        <h1 className="text-4xl font-black text-black mb-2 font-heading">{resumeData.fullName}</h1>
-                        <p className="text-xl font-bold text-black">{resumeData.jobTitle}</p>
+            <div className="flex-1 overflow-y-auto custom-scrollbar flex justify-center items-start py-6 w-full rounded-2xl bg-secondary/30 shadow-inner relative">
+              <div className="w-[210mm] max-w-full px-4 sm:px-8 transform origin-top mx-auto shrink-0 mb-8">
+                <div ref={componentRef} className="w-full bg-white print:shadow-none shadow-soft-lg transition-all duration-300 rounded-sm">
+                  <div className={`min-h-[297mm] w-full bg-white text-black ${
+                    activeTemplate === 'modern' ? 'p-0 flex overflow-hidden' : 'p-10 sm:p-14'
+                  } ${activeTemplate === 'minimal' ? 'font-sans border-t-[12px] border-black' : 'font-heading'}`}>
+                  
+                  {activeTemplate === 'classic' && (
+                    <div className="space-y-8 text-left h-full w-full" dir="ltr">
+                      <header className="border-b-2 border-black pb-8 mb-8 text-center">
+                        <h1 className="text-4xl sm:text-5xl font-bold uppercase tracking-widest text-black mb-3 font-heading">{resumeData.fullName}</h1>
+                        <p className="font-bold tracking-widest uppercase text-lg sm:text-xl mb-5 text-gray-700">{resumeData.jobTitle}</p>
+                        <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 text-sm text-black font-semibold font-sans">
+                          <span className="flex items-center gap-1">✉ {resumeData.email}</span>
+                          <span className="flex items-center gap-1">📞 {resumeData.phone}</span>
+                        </div>
                       </header>
-                      <div className="space-y-8">
-                        <section>
-                          <h2 className="text-sm font-black border-b-2 border-black pb-2 mb-4 uppercase tracking-widest">Summary</h2>
-                          <p className="text-sm font-bold leading-relaxed text-black">{resumeData.summary}</p>
-                        </section>
-                        <section>
-                          <h2 className="text-sm font-black border-b-2 border-black pb-2 mb-4 uppercase tracking-widest">Experience</h2>
-                          <div className="text-sm font-bold leading-relaxed text-black whitespace-pre-line font-sans">
-                            {resumeData.experience}
-                          </div>
-                        </section>
+                      <div className="space-y-10 w-full">
+                        <ResumeSections data={resumeData} />
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {activeTemplate === 'minimal' && (
-                  <div className="space-y-10 text-left h-full p-12" dir="ltr">
-                    <header>
-                      <h1 className="text-5xl font-black text-black mb-4 tracking-tighter font-heading">{resumeData.fullName}</h1>
-                      <div className="flex flex-wrap gap-4 text-sm font-bold font-sans text-black">
-                        <span className="text-black">{resumeData.jobTitle}</span>
-                        <span>•</span>
-                        <span>{resumeData.email}</span>
-                        <span>•</span>
-                        <span>{resumeData.phone}</span>
-                      </div>
-                    </header>
-                    <div className="grid grid-cols-4 gap-8">
-                      <div className="col-span-1 border-t-2 border-black pt-4">
-                        <h2 className="text-xs font-black uppercase tracking-widest text-black mb-2">About</h2>
-                      </div>
-                      <div className="col-span-3 border-t-2 border-black pt-4">
-                        <p className="text-sm font-bold leading-relaxed text-black">{resumeData.summary}</p>
-                      </div>
-                      
-                      <div className="col-span-1 border-t-2 border-black pt-4">
-                        <h2 className="text-xs font-black uppercase tracking-widest text-black mb-2">Work</h2>
-                      </div>
-                      <div className="col-span-3 border-t-2 border-black pt-4">
-                        <div className="text-sm font-bold leading-relaxed text-black whitespace-pre-line font-sans">
-                          {resumeData.experience}
+                  {activeTemplate === 'modern' && (
+                    <div className="flex h-full min-h-[297mm] w-full" dir="ltr">
+                      <div className="w-[35%] bg-black text-white p-8 shrink-0">
+                        <div className="w-28 h-28 bg-white text-black rounded-full mb-10 flex items-center justify-center text-5xl font-black mx-auto font-heading shadow-lg">
+                          {resumeData.fullName.charAt(0)}
+                        </div>
+                        <div className="space-y-10">
+                          <section>
+                            <h3 className="text-xs font-black uppercase mb-4 tracking-widest border-b border-white/30 pb-2 text-white/90">Contact</h3>
+                            <div className="text-sm space-y-4 font-semibold font-sans text-white/80">
+                              <p className="break-all">{resumeData.email}</p>
+                              <p>{resumeData.phone}</p>
+                            </div>
+                          </section>
+                          <section>
+                            <h3 className="text-xs font-black uppercase mb-4 tracking-widest border-b border-white/30 pb-2 text-white/90">Education</h3>
+                            <p className="text-sm font-semibold leading-relaxed whitespace-pre-line text-white/80">{resumeData.education}</p>
+                          </section>
                         </div>
                       </div>
-
-                      <div className="col-span-1 border-t-2 border-black pt-4">
-                        <h2 className="text-xs font-black uppercase tracking-widest text-black mb-2">Study</h2>
-                      </div>
-                      <div className="col-span-3 border-t-2 border-black pt-4">
-                        <p className="text-sm font-bold leading-relaxed text-black whitespace-pre-line">{resumeData.education}</p>
+                      <div className="flex-1 p-10 sm:p-12 text-left bg-white">
+                        <header className="mb-12">
+                          <h1 className="text-4xl sm:text-5xl font-black text-black mb-3 font-heading tracking-tight">{resumeData.fullName}</h1>
+                          <p className="text-xl font-bold text-gray-600 uppercase tracking-wider">{resumeData.jobTitle}</p>
+                        </header>
+                        <div className="space-y-10">
+                          <section>
+                            <h2 className="text-sm font-black border-b-2 border-black pb-2 mb-5 uppercase tracking-widest text-black">Summary</h2>
+                            <p className="text-sm font-semibold leading-relaxed text-gray-800">{resumeData.summary}</p>
+                          </section>
+                          <section>
+                            <h2 className="text-sm font-black border-b-2 border-black pb-2 mb-5 uppercase tracking-widest text-black">Experience</h2>
+                            <div className="text-sm font-semibold leading-relaxed text-gray-800 whitespace-pre-line font-sans">
+                              {resumeData.experience}
+                            </div>
+                          </section>
+                        </div>
                       </div>
                     </div>
+                  )}
+
+                  {activeTemplate === 'minimal' && (
+                    <div className="space-y-12 text-left h-full w-full" dir="ltr">
+                      <header className="mb-12">
+                        <h1 className="text-5xl sm:text-6xl font-black text-black mb-5 tracking-tighter font-heading">{resumeData.fullName}</h1>
+                        <div className="flex flex-wrap gap-4 text-sm font-bold font-sans text-gray-600">
+                          <span className="text-black uppercase tracking-wider">{resumeData.jobTitle}</span>
+                          <span>•</span>
+                          <span>{resumeData.email}</span>
+                          <span>•</span>
+                          <span>{resumeData.phone}</span>
+                        </div>
+                      </header>
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-8">
+                        <div className="sm:col-span-1 border-t-2 border-black pt-4">
+                          <h2 className="text-xs font-black uppercase tracking-widest text-black mb-2">About</h2>
+                        </div>
+                        <div className="sm:col-span-3 border-t-2 border-black pt-4">
+                          <p className="text-sm font-medium leading-relaxed text-black">{resumeData.summary}</p>
+                        </div>
+                        
+                        <div className="sm:col-span-1 border-t-2 border-black pt-4">
+                          <h2 className="text-xs font-black uppercase tracking-widest text-black mb-2">Work</h2>
+                        </div>
+                        <div className="sm:col-span-3 border-t-2 border-black pt-4">
+                          <div className="text-sm font-medium leading-relaxed text-black whitespace-pre-line font-sans">
+                            {resumeData.experience}
+                          </div>
+                        </div>
+
+                        <div className="sm:col-span-1 border-t-2 border-black pt-4">
+                          <h2 className="text-xs font-black uppercase tracking-widest text-black mb-2">Study</h2>
+                        </div>
+                        <div className="sm:col-span-3 border-t-2 border-black pt-4">
+                          <p className="text-sm font-medium leading-relaxed text-black whitespace-pre-line">{resumeData.education}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {activeTemplate !== 'modern' && (
+                    <footer className="mt-20 pt-8 border-t border-gray-200 text-[10px] text-center font-bold text-gray-400 font-sans uppercase tracking-widest">
+                      Generated by Khabir
+                    </footer>
+                  )}
                   </div>
-                )}
-                
-                {activeTemplate !== 'modern' && (
-                  <footer className="mt-20 pt-8 border-t border-black text-[10px] text-center font-bold text-black font-sans uppercase tracking-widest">
-                    Generated by Khabir
-                  </footer>
-                )}
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
+          
         </div>
-      </div>
-    </main>
+      </main>
       
       <style dangerouslySetInnerHTML={{ __html: `
         .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
+          width: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(0, 0, 0, 0.2);
+          background: hsl(var(--border) / 0.8);
           border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: hsl(var(--muted-foreground) / 0.5);
         }
         .dark .custom-scrollbar::-webkit-scrollbar-thumb {
           background: rgba(255, 255, 255, 0.2);
@@ -409,21 +417,21 @@ export default function Editor() {
 function ResumeSections({ data }: { data: any }) {
   return (
     <>
-      <section>
-        <h2 className="text-xs font-black bg-black text-white px-3 py-1 inline-block mb-3 uppercase tracking-widest">Summary</h2>
-        <p className="text-sm font-bold leading-relaxed text-black text-justify">{data.summary}</p>
+      <section className="w-full">
+        <h2 className="text-xs font-black bg-black text-white px-4 py-1.5 inline-block mb-4 uppercase tracking-widest rounded-sm">Summary</h2>
+        <p className="text-sm font-semibold leading-relaxed text-gray-800 text-justify">{data.summary}</p>
       </section>
 
-      <section>
-        <h2 className="text-xs font-black bg-black text-white px-3 py-1 inline-block mb-3 uppercase tracking-widest">Experience</h2>
-        <div className="text-sm font-bold leading-relaxed text-black whitespace-pre-line space-y-2 font-sans">
+      <section className="w-full">
+        <h2 className="text-xs font-black bg-black text-white px-4 py-1.5 inline-block mb-4 uppercase tracking-widest rounded-sm">Experience</h2>
+        <div className="text-sm font-semibold leading-relaxed text-gray-800 whitespace-pre-line space-y-3 font-sans">
           {data.experience}
         </div>
       </section>
 
-      <section>
-        <h2 className="text-xs font-black bg-black text-white px-3 py-1 inline-block mb-3 uppercase tracking-widest">Education</h2>
-        <p className="text-sm font-bold leading-relaxed text-black">{data.education}</p>
+      <section className="w-full">
+        <h2 className="text-xs font-black bg-black text-white px-4 py-1.5 inline-block mb-4 uppercase tracking-widest rounded-sm">Education</h2>
+        <p className="text-sm font-semibold leading-relaxed text-gray-800">{data.education}</p>
       </section>
     </>
   );
