@@ -9,43 +9,39 @@ import {
   Trash2, 
   ExternalLink, 
   Plus, 
-  Search,
   Layout,
-  BarChart2
+  BarChart2,
+  Loader2,
+  Inbox
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
-const mockSavedFiles = [
-  {
-    id: "1",
-    name: "Software_Engineer_Resume.pdf",
-    date: "2026-02-28",
-    score: 85,
-    template: "Modern",
-    type: "Analysis"
-  },
-  {
-    id: "2",
-    name: "Product_Manager_Draft.pdf",
-    date: "2026-02-25",
-    score: 72,
-    template: "Classic",
-    type: "Editor"
-  },
-  {
-    id: "3",
-    name: "Marketing_Lead_Final.pdf",
-    date: "2026-02-20",
-    score: 94,
-    template: "Minimal",
-    type: "Analysis"
-  }
-];
+interface ResumeRecord {
+  id: string;
+  fileName: string;
+  fileType: string;
+  type: string;
+  score: number | null;
+  template: string | null;
+  createdAt: string;
+}
+
+interface Stats {
+  totalFiles: number;
+  avgScore: number;
+  templatesUsed: number;
+}
 
 export default function Dashboard() {
   const [isRtl, setIsRtl] = useState(false);
+  const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
@@ -55,6 +51,28 @@ export default function Dashboard() {
     return () => observer.disconnect();
   }, []);
 
+  const { data: resumes = [], isLoading: resumesLoading } = useQuery<ResumeRecord[]>({
+    queryKey: ["/api/resumes"],
+  });
+
+  const { data: stats } = useQuery<Stats>({
+    queryKey: ["/api/resumes/stats"],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/resumes/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/resumes"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/resumes/stats"] });
+      toast({
+        title: isRtl ? "تم الحذف" : "Deleted",
+        description: isRtl ? "تم حذف السجل بنجاح" : "Record deleted successfully",
+      });
+    },
+  });
+
   return (
     <div className="min-h-screen bg-muted/20 font-sans pb-32">
       <Navbar />
@@ -62,7 +80,7 @@ export default function Dashboard() {
       <main className="container max-w-[1200px] mx-auto px-4 pt-40 lg:pt-48 pb-12" dir={isRtl ? "rtl" : "ltr"}>
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 mt-4">
           <div className={isRtl ? "text-right w-full" : "text-left w-full"}>
-            <h1 className="text-3xl md:text-4xl font-heading font-bold mb-2 text-foreground">
+            <h1 className="text-3xl md:text-4xl font-heading font-bold mb-2 text-foreground" data-testid="text-dashboard-title">
               {isRtl ? "لوحة التحكم" : "Dashboard"}
             </h1>
             <p className="text-muted-foreground font-medium">
@@ -71,7 +89,7 @@ export default function Dashboard() {
           </div>
           <div className="flex gap-3 mt-4 md:mt-0 shrink-0">
             <Link href="/editor">
-              <Button className="rounded-xl shadow-lg shadow-primary/20 h-12 px-6 font-bold">
+              <Button className="rounded-xl shadow-lg shadow-primary/20 h-12 px-6 font-bold" data-testid="button-create-new">
                 <Plus className={`h-5 w-5 ${isRtl ? 'ml-2' : 'mr-2'}`} />
                 {isRtl ? "إنشاء جديد" : "Create New"}
               </Button>
@@ -82,19 +100,19 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <StatCard 
             title={isRtl ? "إجمالي الملفات" : "Total Files"} 
-            value="12" 
+            value={String(stats?.totalFiles ?? 0)} 
             icon={<FileText className="h-5 w-5 text-blue-500" />}
             isRtl={isRtl}
           />
           <StatCard 
             title={isRtl ? "متوسط النتيجة" : "Average Score"} 
-            value="78%" 
+            value={stats?.avgScore ? `${stats.avgScore}%` : "—"} 
             icon={<BarChart2 className="h-5 w-5 text-green-500" />}
             isRtl={isRtl}
           />
           <StatCard 
             title={isRtl ? "النماذج المستخدمة" : "Templates Used"} 
-            value="3" 
+            value={String(stats?.templatesUsed ?? 0)} 
             icon={<Layout className="h-5 w-5 text-purple-500" />}
             isRtl={isRtl}
           />
@@ -111,67 +129,109 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-right" dir={isRtl ? "rtl" : "ltr"}>
-                <thead className="bg-muted/50 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  <tr>
-                    <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "الملف" : "File"}</th>
-                    <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "التاريخ" : "Date"}</th>
-                    <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "النتيجة" : "Score"}</th>
-                    <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "النوع" : "Type"}</th>
-                    <th className="px-6 py-4 text-center">{isRtl ? "إجراءات" : "Actions"}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {mockSavedFiles.map((file) => (
-                    <motion.tr 
-                      key={file.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="hover:bg-primary/5 transition-colors group"
-                    >
-                      <td className="px-6 py-4">
-                        <div className={`flex items-center gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
-                          <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-                            <FileText className="h-4 w-4 text-primary" />
+            {resumesLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : resumes.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+                <Inbox className="h-12 w-12 text-muted-foreground/40 mb-4" />
+                <h3 className="text-lg font-bold mb-2">{isRtl ? "لا توجد سجلات بعد" : "No records yet"}</h3>
+                <p className="text-sm text-muted-foreground mb-6 max-w-md">
+                  {isRtl ? "ابدأ بتحليل سيرتك الذاتية أو إنشاء واحدة جديدة باستخدام المحرر" : "Start by analyzing a resume or creating one with the editor"}
+                </p>
+                <div className="flex gap-3">
+                  <Link href="/#upload-section">
+                    <Button variant="outline" className="rounded-xl font-bold">
+                      {isRtl ? "تحليل سيرة ذاتية" : "Analyze Resume"}
+                    </Button>
+                  </Link>
+                  <Link href="/editor">
+                    <Button className="rounded-xl font-bold">
+                      {isRtl ? "إنشاء جديد" : "Create New"}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-right" dir={isRtl ? "rtl" : "ltr"} data-testid="table-resumes">
+                  <thead className="bg-muted/50 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    <tr>
+                      <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "الملف" : "File"}</th>
+                      <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "التاريخ" : "Date"}</th>
+                      <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "النتيجة" : "Score"}</th>
+                      <th className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>{isRtl ? "النوع" : "Type"}</th>
+                      <th className="px-6 py-4 text-center">{isRtl ? "إجراءات" : "Actions"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {resumes.map((file) => (
+                      <motion.tr 
+                        key={file.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="hover:bg-primary/5 transition-colors group"
+                        data-testid={`row-resume-${file.id}`}
+                      >
+                        <td className="px-6 py-4">
+                          <div className={`flex items-center gap-3 ${isRtl ? 'text-right' : 'text-left'}`}>
+                            <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+                              <FileText className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-bold text-sm">{file.fileName}</p>
+                              <p className="text-xs text-muted-foreground">{file.template || "—"}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-bold text-sm">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">{file.template}</p>
+                        </td>
+                        <td className={`px-6 py-4 text-sm text-muted-foreground ${isRtl ? 'text-right' : 'text-left'}`}>
+                          {new Date(file.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          {file.score != null ? (
+                            <Badge variant={file.score > 80 ? "default" : "secondary"} className="rounded-lg">
+                              {file.score}%
+                            </Badge>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">—</span>
+                          )}
+                        </td>
+                        <td className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>
+                          <Badge variant="outline" className="rounded-lg">
+                            {file.type === "analysis" ? (isRtl ? "تحليل" : "Analysis") : (isRtl ? "محرر" : "Editor")}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {file.type === "analysis" && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary"
+                                onClick={() => setLocation(`/analysis?id=${file.id}`)}
+                                data-testid={`button-view-${file.id}`}
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive"
+                              onClick={() => deleteMutation.mutate(file.id)}
+                              data-testid={`button-delete-${file.id}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
-                        </div>
-                      </td>
-                      <td className={`px-6 py-4 text-sm text-muted-foreground ${isRtl ? 'text-right' : 'text-left'}`}>
-                        {file.date}
-                      </td>
-                      <td className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>
-                        <Badge variant={file.score > 80 ? "default" : "secondary"} className="rounded-lg">
-                          {file.score}%
-                        </Badge>
-                      </td>
-                      <td className={`px-6 py-4 ${isRtl ? 'text-right' : 'text-left'}`}>
-                        <Badge variant="outline" className="rounded-lg">
-                          {file.type === "Analysis" ? (isRtl ? "تحليل" : "Analysis") : (isRtl ? "محرر" : "Editor")}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary">
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>

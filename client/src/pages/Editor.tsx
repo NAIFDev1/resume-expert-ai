@@ -102,11 +102,30 @@ export default function Editor() {
     setResumeData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    toast({
-      title: isRtl ? "تم الحفظ" : "Saved",
-      description: isRtl ? "تم حفظ التغييرات بنجاح" : "Changes saved successfully",
-    });
+  const handleSave = async () => {
+    try {
+      const response = await fetch("/api/resumes/editor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          fileName: `${resumeData.fullName}_Resume`,
+          template: activeTemplate,
+          resumeData,
+        }),
+      });
+      if (!response.ok) throw new Error("Save failed");
+      toast({
+        title: isRtl ? "تم الحفظ" : "Saved",
+        description: isRtl ? "تم حفظ السيرة الذاتية في لوحة التحكم" : "Resume saved to your dashboard",
+      });
+    } catch {
+      toast({
+        title: isRtl ? "خطأ" : "Error",
+        description: isRtl ? "فشل حفظ السيرة الذاتية" : "Failed to save resume",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePrint = useReactToPrint({

@@ -29,26 +29,43 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  const handleUpload = useCallback((file: File) => {
+  const handleUpload = useCallback(async (file: File) => {
     setSelectedFile(file);
     setUploading(true);
     setUploadProgress(0);
 
+    let progress = 0;
     const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            const url = new URL(window.location.origin + '/analysis');
-            if (jobDescription) url.searchParams.set('jd', jobDescription);
-            url.searchParams.set('name', file.name);
-            setLocation(url.pathname + url.search);
-          }, 500);
-          return 100;
-        }
-        return prev + 5;
-      });
+      progress += 3;
+      setUploadProgress(Math.min(progress, 90));
     }, 100);
+
+    try {
+      const response = await fetch("/api/resumes/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type || "application/pdf",
+          jobDescription: jobDescription || undefined,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Analysis failed");
+      const result = await response.json();
+
+      clearInterval(interval);
+      setUploadProgress(100);
+
+      setTimeout(() => {
+        setLocation(`/analysis?id=${result.id}`);
+      }, 600);
+    } catch {
+      clearInterval(interval);
+      setUploading(false);
+      setUploadProgress(0);
+    }
   }, [setLocation, jobDescription]);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -228,6 +245,7 @@ export default function Home() {
                 className="min-h-[120px] rounded-2xl bg-secondary/30 border-secondary focus:border-primary focus:ring-primary/20 transition-all text-base p-4 font-sans shadow-inner"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
+                data-testid="input-job-description"
               />
             </div>
           )}

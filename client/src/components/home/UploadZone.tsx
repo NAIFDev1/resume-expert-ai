@@ -1,10 +1,11 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useLocation } from 'wouter';
 import { Upload, FileText, CheckCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 export function UploadZone() {
   const [isUploading, setIsUploading] = useState(false);
@@ -13,7 +14,7 @@ export function UploadZone() {
   const { toast } = useToast();
   const isRtl = document.documentElement.dir === "rtl";
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
 
@@ -27,20 +28,42 @@ export function UploadZone() {
     }
 
     setIsUploading(true);
-    
+
     let progress = 0;
     const interval = setInterval(() => {
-      progress += 5;
-      setUploadProgress(progress);
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsUploading(false);
-          setLocation('/analysis');
-        }, 800);
-      }
+      progress += 3;
+      setUploadProgress(Math.min(progress, 90));
     }, 100);
 
+    try {
+      const jdInput = document.querySelector<HTMLTextAreaElement>('[data-testid="input-job-description"]');
+      const jobDescription = jdInput?.value || "";
+
+      const response = await apiRequest("POST", "/api/resumes/analyze", {
+        fileName: file.name,
+        fileType: file.type,
+        jobDescription: jobDescription || undefined,
+      });
+
+      const result = await response.json();
+
+      clearInterval(interval);
+      setUploadProgress(100);
+
+      setTimeout(() => {
+        setIsUploading(false);
+        setLocation(`/analysis?id=${result.id}`);
+      }, 600);
+    } catch (error: any) {
+      clearInterval(interval);
+      setIsUploading(false);
+      setUploadProgress(0);
+      toast({
+        title: isRtl ? "خطأ في التحليل" : "Analysis Error",
+        description: error.message || "Something went wrong",
+        variant: "destructive"
+      });
+    }
   }, [setLocation, toast, isRtl]);
 
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
@@ -62,29 +85,29 @@ export function UploadZone() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
           >
-            <div 
+            <div
               {...getRootProps()}
               className={`
                 relative overflow-hidden rounded-2xl border-2 border-dashed p-12 text-center transition-all duration-300 cursor-pointer
                 ${isDragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-border hover:border-primary/50 hover:bg-muted/30'}
               `}
             >
-              <input {...getInputProps()} />
-              
+              <input {...getInputProps()} data-testid="input-resume-file" />
+
               <div className="flex flex-col items-center gap-4">
                 <div className={`p-4 rounded-full ${isDragActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                   <Upload className="h-8 w-8" />
                 </div>
-                
+
                 <div className="space-y-2">
                   <h3 className="text-xl font-heading font-semibold">
-                    {isDragActive 
-                      ? (isRtl ? "ضع سيرتك الذاتية هنا" : "Drop your resume here") 
+                    {isDragActive
+                      ? (isRtl ? "ضع سيرتك الذاتية هنا" : "Drop your resume here")
                       : (isRtl ? "ارفع سيرتك الذاتية" : "Upload your resume")
                     }
                   </h3>
                   <p className="text-muted-foreground max-w-xs mx-auto text-sm">
-                    {isRtl 
+                    {isRtl
                       ? "اسحب وأسقط ملف PDF أو DOCX هنا، أو انقر للتصفح."
                       : "Drag and drop your PDF or DOCX file here, or click to browse."
                     }
@@ -103,7 +126,7 @@ export function UploadZone() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="rounded-2xl border bg-card p-8 shadow-lg text-left"
-            dir="ltr" // Keep upload status in LTR for technical consistency or handle RTL specifically
+            dir="ltr"
           >
             <div className="flex items-center gap-4 mb-6">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -117,7 +140,7 @@ export function UploadZone() {
               </div>
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-medium text-muted-foreground">
                 <span>{isRtl ? "جاري المعالجة" : "Processing"}</span>

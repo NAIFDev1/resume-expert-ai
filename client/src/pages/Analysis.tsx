@@ -7,14 +7,24 @@ import { Download, Share2, ArrowLeft, Loader2, Sparkles, Target, Zap, CheckCircl
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
-import { analyzeResume, AnalysisResult } from "@/lib/ai-engine";
 import { useReactToPrint } from "react-to-print";
+
+interface AnalysisResult {
+  score: number;
+  summaryEn: string;
+  summaryAr: string;
+  matchRate?: number;
+  skills: { subject: string; A: number; fullMark: number; match?: boolean; nameEn?: string; nameAr?: string }[];
+  checks: { labelEn: string; labelAr: string; status: 'pass' | 'fail' | 'warn' }[];
+  suggestions: { id: string; titleEn: string; titleAr: string; descEn: string; descAr: string; impact: 'High' | 'Medium' }[];
+}
 
 export default function Analysis() {
   const [isRtl, setIsRtl] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasJD, setHasJD] = useState(false);
+  const [fileName, setFileName] = useState("resume.pdf");
   const reportRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
@@ -25,28 +35,28 @@ export default function Analysis() {
   useEffect(() => {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
     checkLang();
-    
-    const params = new URLSearchParams(window.location.search);
-    const jd = params.get('jd');
-    const fileName = params.get('name') || "resume.pdf";
-    setHasJD(!!jd);
 
-    const timer = setTimeout(() => {
-      const analysis = analyzeResume(fileName, jd || undefined);
-      if (jd && !analysis.matchRate) {
-        analysis.matchRate = 72;
-      }
-      setResult(analysis);
+    const params = new URLSearchParams(window.location.search);
+    const resumeId = params.get('id');
+
+    if (resumeId) {
+      fetch(`/api/resumes/${resumeId}`, { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+          setFileName(data.fileName || "resume.pdf");
+          setHasJD(!!data.jobDescription);
+          setResult(data.analysisResult as AnalysisResult);
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
+    } else {
       setIsLoading(false);
-    }, 2000);
+    }
 
     const observer = new MutationObserver(checkLang);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
-    
-    return () => {
-      observer.disconnect();
-      clearTimeout(timer);
-    };
+
+    return () => observer.disconnect();
   }, []);
 
   if (isLoading) {
@@ -100,7 +110,7 @@ export default function Analysis() {
                 <p className="text-muted-foreground text-sm font-medium truncate">
                   {isRtl ? "تقرير مفصل لـ " : "Detailed report for "}
                   <span className="font-bold text-foreground">
-                    {new URLSearchParams(window.location.search).get('name') || "resume.pdf"}
+                    {fileName}
                   </span>
                 </p>
               </div>
