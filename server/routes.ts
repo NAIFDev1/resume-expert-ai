@@ -91,11 +91,7 @@ export async function registerRoutes(
       });
 
       const data = schema.parse(req.body);
-      const analysis = analyzeResume(data.fileName, data.jobDescription);
-
-      if (data.jobDescription && !analysis.matchRate) {
-        analysis.matchRate = 72;
-      }
+      const analysis = await analyzeResume(data.fileName, data.jobDescription);
 
       const userId = req.isAuthenticated() ? req.user!.id : null;
 

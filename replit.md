@@ -14,6 +14,13 @@ Full-stack bilingual (Arabic/English) resume analysis platform with ATS scoring,
 - `server/` — Express API (`routes.ts`, `storage.ts`, `db.ts`, `ai-engine.ts`, `auth.ts`)
 - `shared/schema.ts` — Drizzle schema + Zod insert schemas (users, resumes)
 
+## AI Analysis Engine
+- `server/ai-engine.ts` — Real GPT-4o powered analysis via Replit AI Integrations (OpenAI compatible)
+- Sends filename + jobDescription to GPT-4o with structured JSON prompt
+- Returns: ATS score, bilingual summary, 5 skill dimensions, 7-8 ATS checks, 3 actionable suggestions
+- Graceful fallback: if AI fails, returns sensible default analysis (no crash)
+- Environment vars: `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`
+
 ## Auth System
 - `server/auth.ts` — Passport local strategy setup + session config + bcrypt helpers
 - `setupAuth(app)` called in `server/index.ts` before routes
