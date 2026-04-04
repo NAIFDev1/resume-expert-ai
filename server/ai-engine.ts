@@ -15,140 +15,143 @@ export interface AnalysisResult {
   suggestions: { id: string; titleEn: string; titleAr: string; descEn: string; descAr: string; impact: 'High' | 'Medium' }[];
 }
 
-const ANALYSIS_SYSTEM_PROMPT = `You are Khabir (خبير), an expert bilingual AI resume analyst specializing in ATS optimization. 
-You analyze resumes and provide structured, actionable feedback in both English and Arabic.
-Always respond with valid JSON only — no markdown, no explanation, just the JSON object.`;
+const SYSTEM_PROMPT = `You are Khabir (خبير), an expert bilingual AI resume analyst and ATS optimization specialist.
+You analyze the actual text content of resumes and provide deeply personalized, actionable feedback in both English and Arabic.
+Always respond with valid JSON only — no markdown, no explanation outside the JSON.`;
 
-function buildUserPrompt(fileName: string, jobDescription?: string): string {
-  return `A user has uploaded a resume file named "${fileName}" to an ATS analyzer.
-${jobDescription ? `They also provided this job description to match against:\n"${jobDescription}"\n` : 'No job description provided — do general ATS analysis.\n'}
+function buildPrompt(
+  fileName: string,
+  resumeText: string,
+  jobDescription?: string,
+  meta?: { pageCount?: number; wordCount: number; method: string }
+): string {
+  const hasRealText = meta?.method !== "filename-only" && resumeText.length > 100;
+  const hasJD = !!jobDescription?.trim();
 
-IMPORTANT: This is ALWAYS a resume file — the user selected it from their documents. Do NOT question whether it is a resume. Just analyze it as one and provide realistic ATS feedback based on the filename and any available context.
+  const context = hasRealText
+    ? `RESUME CONTENT (extracted from "${fileName}", ${meta?.wordCount ?? 0} words, ${meta?.pageCount ?? "?"} pages):\n\`\`\`\n${resumeText.slice(0, 8000)}\n\`\`\``
+    : `RESUME FILE: "${fileName}" (text could not be extracted — analyze based on filename and context only)`;
 
-Return a JSON object with exactly this structure:
+  const jdSection = hasJD
+    ? `\nJOB DESCRIPTION TO MATCH AGAINST:\n\`\`\`\n${jobDescription!.slice(0, 2000)}\n\`\`\``
+    : "\nNo job description provided — perform general ATS analysis.";
+
+  return `${context}${jdSection}
+
+${hasRealText ? "Analyze the ACTUAL CONTENT of this resume." : "Analyze based on the filename context."} Return a JSON object:
+
 {
-  "score": <integer 55-95, realistic ATS compatibility score>,
-  "matchRate": ${jobDescription ? '<integer 50-90, how well the resume likely matches the JD>' : 'null'},
-  "summaryEn": "<2-3 sentence English analysis of this resume's strengths and main areas to improve for ATS>",
-  "summaryAr": "<same content in natural professional Arabic — not a direct translation, rephrase naturally>",
+  "score": <integer 45-97, realistic ATS compatibility score based on actual content>,
+  "matchRate": ${hasJD ? '<integer 40-95, specific match percentage between resume and JD>' : 'null'},
+  "summaryEn": "<2-3 sentences referencing specific content from the resume — name strengths found in the text, identify exact weaknesses>",
+  "summaryAr": "<same insights in natural professional Arabic — not a direct translation, rephrase for native Arabic speakers>",
   "skills": [
-    { "subject": "<SkillEn / SkillAr>", "A": <integer 40-95>, "fullMark": 100, "match": <boolean>, "nameEn": "<English name>", "nameAr": "<Arabic name>" }
+    {"subject": "Technical Skills / المهارات التقنية", "A": <int 30-97>, "fullMark": 100, "match": <bool>, "nameEn": "Technical Skills", "nameAr": "المهارات التقنية"},
+    {"subject": "Soft Skills / المهارات الشخصية", "A": <int 30-97>, "fullMark": 100, "match": <bool>, "nameEn": "Soft Skills", "nameAr": "المهارات الشخصية"},
+    {"subject": "Structure / الهيكلية", "A": <int 30-97>, "fullMark": 100, "match": <bool>, "nameEn": "Structure", "nameAr": "الهيكلية"},
+    {"subject": "Impact / التأثير", "A": <int 30-97>, "fullMark": 100, "match": <bool>, "nameEn": "Impact", "nameAr": "التأثير"},
+    {"subject": "Keyword Relevance / الملاءمة", "A": <int 30-97>, "fullMark": 100, "match": <bool>, "nameEn": "Keyword Relevance", "nameAr": "الملاءمة"}
   ],
   "checks": [
-    { "labelEn": "<check label>", "labelAr": "<same in Arabic>", "status": "pass" | "fail" | "warn" }
+    {"labelEn": "File Format", "labelAr": "تنسيق الملف", "status": "pass"},
+    {"labelEn": "Text Extractable", "labelAr": "النص قابل للاستخراج", "status": ${hasRealText ? '"pass"' : '"fail"'}},
+    {"labelEn": "Contact Information", "labelAr": "معلومات الاتصال", "status": <"pass"|"warn"|"fail">},
+    {"labelEn": "Section Headers", "labelAr": "عناوين الأقسام", "status": <"pass"|"warn"|"fail">},
+    {"labelEn": "Action Verbs", "labelAr": "أفعال التأثير", "status": <"pass"|"warn"|"fail">},
+    {"labelEn": "Keyword Density", "labelAr": "كثافة الكلمات المفتاحية", "status": <"pass"|"warn"|"fail">},
+    {"labelEn": "Quantified Achievements", "labelAr": "إنجازات قابلة للقياس", "status": <"pass"|"warn"|"fail">}${hasJD ? ',\n    {"labelEn": "Job Match Keywords", "labelAr": "كلمات مطابقة الوظيفة", "status": <"pass"|"warn"|"fail">}' : ''}
   ],
   "suggestions": [
-    { "id": "s-1", "titleEn": "<title>", "titleAr": "<Arabic title>", "descEn": "<specific actionable 2-sentence advice>", "descAr": "<Arabic version>", "impact": "High" | "Medium" }
+    {"id": "s-1", "titleEn": "<specific title referencing actual content>", "titleAr": "<عنوان بالعربي>", "descEn": "<2 sentences with specific advice referencing actual names/sections found in resume>", "descAr": "<نفس المشورة بعربي طبيعي>", "impact": "High"},
+    {"id": "s-2", ...},
+    {"id": "s-3", ..., "impact": "Medium"}
   ]
 }
 
-Rules:
-- skills: exactly 5 items for: Technical Skills, Soft Skills, Structure/Formatting, Impact/Quantification, Keyword Relevance
-- checks: exactly 7 items: File Format (pass), Text Selectable (pass), Contact Information, Section Headers, Keyword Density, Date Formatting, Action Verbs${jobDescription ? ', Job Match Keywords' : ''}
-- suggestions: exactly 3, most impactful first, specific advice tailored to the file name and context
-- matchRate: include only if jobDescription was provided, set to null otherwise
-- All scores must be varied and realistic (not all the same number)
-- Arabic must be natural professional Arabic`;
+Critical rules:
+- ${hasRealText ? "Reference SPECIFIC content from the resume (names, job titles, companies, skills mentioned)" : "Provide general resume improvement advice"}
+- All 5 skill scores must be DIFFERENT numbers (realistic variation)
+- Suggestions must be actionable and specific, not generic
+- ${hasJD ? "matchRate must reflect actual keyword overlap between resume text and JD" : "Omit matchRate (set null)"}
+- summaryAr must be natural Arabic — not translated word-for-word from English`;
 }
 
-function getFallbackResult(fileName: string, jobDescription?: string): AnalysisResult {
+function getFallback(fileName: string, jobDescription?: string): AnalysisResult {
   const hasJD = !!jobDescription?.trim();
   return {
-    score: 72,
-    matchRate: hasJD ? 68 : undefined,
-    summaryEn: "Your resume demonstrates relevant experience and solid structure. To improve your ATS score, focus on adding measurable achievements and incorporating industry-specific keywords throughout your experience section.",
-    summaryAr: "تُظهر سيرتك الذاتية خبرة ذات صلة وهيكلاً متيناً. لتحسين نتيجة ATS، ركز على إضافة إنجازات قابلة للقياس ودمج الكلمات المفتاحية الخاصة بالمجال في قسم خبرتك.",
+    score: 68,
+    matchRate: hasJD ? 62 : undefined,
+    summaryEn: "Your resume has a reasonable structure but needs improvements in keyword optimization and quantified achievements to pass modern ATS filters effectively.",
+    summaryAr: "سيرتك الذاتية لها هيكل معقول ولكنها تحتاج إلى تحسينات في الكلمات المفتاحية والإنجازات الرقمية لتجاوز أنظمة ATS الحديثة بشكل فعّال.",
     skills: [
-      { subject: "Technical / تقني", A: 75, fullMark: 100, match: true, nameEn: "Technical", nameAr: "تقني" },
-      { subject: "Soft Skills / مهارات ناعمة", A: 65, fullMark: 100, match: true, nameEn: "Soft Skills", nameAr: "مهارات ناعمة" },
-      { subject: "Structure / الهيكلية", A: 80, fullMark: 100, match: true, nameEn: "Structure", nameAr: "الهيكلية" },
-      { subject: "Impact / التأثير", A: 55, fullMark: 100, match: !hasJD, nameEn: "Impact", nameAr: "التأثير" },
-      { subject: "Relevance / الملاءمة", A: 70, fullMark: 100, match: true, nameEn: "Relevance", nameAr: "الملاءمة" },
+      { subject: "Technical Skills / المهارات التقنية", A: 70, fullMark: 100, match: true, nameEn: "Technical Skills", nameAr: "المهارات التقنية" },
+      { subject: "Soft Skills / المهارات الشخصية", A: 62, fullMark: 100, match: true, nameEn: "Soft Skills", nameAr: "المهارات الشخصية" },
+      { subject: "Structure / الهيكلية", A: 78, fullMark: 100, match: true, nameEn: "Structure", nameAr: "الهيكلية" },
+      { subject: "Impact / التأثير", A: 50, fullMark: 100, match: false, nameEn: "Impact", nameAr: "التأثير" },
+      { subject: "Keyword Relevance / الملاءمة", A: 65, fullMark: 100, match: true, nameEn: "Keyword Relevance", nameAr: "الملاءمة" },
     ],
     checks: [
-      { labelEn: "File Format", labelAr: "تنسيق الملف", status: 'pass' },
-      { labelEn: "Text Selectable", labelAr: "النص قابل للتحديد", status: 'pass' },
-      { labelEn: "Contact Info Found", labelAr: "معلومات الاتصال موجودة", status: 'pass' },
-      { labelEn: "Section Headers", labelAr: "عناوين الأقسام", status: 'pass' },
-      { labelEn: "Keyword Density", labelAr: "كثافة الكلمات المفتاحية", status: 'warn' },
-      { labelEn: "Date Formatting", labelAr: "تنسيق التاريخ", status: 'pass' },
-      ...(hasJD ? [{ labelEn: "Job Match Keywords", labelAr: "كلمات مطابقة الوظيفة", status: 'warn' as const }] : []),
+      { labelEn: "File Format", labelAr: "تنسيق الملف", status: "pass" },
+      { labelEn: "Text Extractable", labelAr: "النص قابل للاستخراج", status: "pass" },
+      { labelEn: "Contact Information", labelAr: "معلومات الاتصال", status: "pass" },
+      { labelEn: "Section Headers", labelAr: "عناوين الأقسام", status: "pass" },
+      { labelEn: "Action Verbs", labelAr: "أفعال التأثير", status: "warn" },
+      { labelEn: "Keyword Density", labelAr: "كثافة الكلمات المفتاحية", status: "warn" },
+      { labelEn: "Quantified Achievements", labelAr: "إنجازات قابلة للقياس", status: "fail" },
+      ...(hasJD ? [{ labelEn: "Job Match Keywords", labelAr: "كلمات مطابقة الوظيفة", status: "warn" as const }] : []),
     ],
     suggestions: [
-      {
-        id: "s-1",
-        titleEn: "Quantify Your Achievements",
-        titleAr: "جعل الإنجازات قابلة للقياس",
-        descEn: "Add specific numbers and metrics to your experience bullets (e.g., 'Increased sales by 30%'). Quantified achievements are 40% more likely to pass ATS filters.",
-        descAr: "أضف أرقاماً ومقاييس محددة لنقاط خبرتك (مثلاً: 'زادت المبيعات بنسبة 30٪'). الإنجازات الرقمية أكثر عبوراً لفلاتر ATS بنسبة 40٪.",
-        impact: "High"
-      },
-      {
-        id: "s-2",
-        titleEn: "Strengthen Your Action Verbs",
-        titleAr: "تقوية أفعال البداية",
-        descEn: "Replace passive phrases like 'Responsible for' with powerful action verbs like 'Spearheaded', 'Orchestrated', or 'Drove'. This signals leadership and ownership.",
-        descAr: "استبدل العبارات السلبية مثل 'مسؤول عن' بأفعال قوية مثل 'قاد'، 'أطلق'، 'طوّر'. هذا يُظهر القيادة والمبادرة لمديري التوظيف.",
-        impact: "High"
-      },
-      {
-        id: "s-3",
-        titleEn: "Add a Professional Summary",
-        titleAr: "إضافة ملخص مهني",
-        descEn: "A tailored 3-line professional summary at the top can increase your interview chances by 50%. Include your years of experience, specialization, and top value proposition.",
-        descAr: "الملخص المهني من 3 أسطر في أعلى السيرة يزيد فرص المقابلة بنسبة 50٪. أدرج سنوات خبرتك وتخصصك وأهم ما تقدمه.",
-        impact: "Medium"
-      }
-    ]
+      { id: "s-1", titleEn: "Add Measurable Achievements", titleAr: "أضف إنجازات قابلة للقياس", descEn: "Replace vague duties with impact metrics (e.g., 'Reduced load time by 40%'). Quantified bullets are 3x more likely to pass ATS and impress recruiters.", descAr: "استبدل المهام المبهمة بمقاييس الأثر (مثل 'خفضت وقت التحميل بنسبة 40٪'). النقاط الرقمية أكثر نجاحاً في ATS بمقدار 3 أضعاف.", impact: "High" },
+      { id: "s-2", titleEn: "Optimize Keyword Density", titleAr: "حسّن كثافة الكلمات المفتاحية", descEn: "Incorporate role-specific keywords naturally throughout all sections. ATS scanners weight keyword frequency heavily in scoring.", descAr: "ادمج الكلمات المفتاحية المتعلقة بالوظيفة بشكل طبيعي في جميع الأقسام. تُعطي أنظمة ATS وزناً كبيراً لتكرار الكلمات.", impact: "High" },
+      { id: "s-3", titleEn: "Strengthen Action Verbs", titleAr: "قوّي أفعال المبادرة", descEn: "Start each bullet with power verbs: 'Engineered', 'Orchestrated', 'Spearheaded'. Avoid 'Responsible for' — it signals passivity to both ATS and humans.", descAr: "ابدأ كل نقطة بفعل قوي: 'قاد'، 'طوّر'، 'أطلق'. تجنب 'مسؤول عن' لأنها تُظهر السلبية لأنظمة ATS والمسؤولين.", impact: "Medium" },
+    ],
   };
 }
 
-export async function analyzeResume(fileName: string, jobDescription?: string): Promise<AnalysisResult> {
-  const isNotResume = (!fileName.toLowerCase().endsWith('.pdf') &&
-    !fileName.toLowerCase().endsWith('.doc') &&
-    !fileName.toLowerCase().endsWith('.docx')) ||
-    fileName.toLowerCase().includes('photo') ||
-    fileName.toLowerCase().includes('صورة');
+export async function analyzeResume(
+  fileName: string,
+  resumeText: string,
+  jobDescription?: string,
+  meta?: { pageCount?: number; wordCount: number; method: string }
+): Promise<AnalysisResult> {
+  const name = fileName.toLowerCase();
+  const isInvalidType =
+    (!name.endsWith(".pdf") && !name.endsWith(".doc") && !name.endsWith(".docx")) &&
+    (name.includes("photo") || name.includes("image") || name.includes("img") || name.includes("صورة"));
 
-  if (isNotResume) {
+  if (isInvalidType) {
     return {
       score: 0,
       matchRate: 0,
-      summaryEn: "The file you uploaded does not appear to be a resume. Please upload a professional CV document in PDF, DOC, or DOCX format.",
-      summaryAr: "الملف الذي قمت برفعه لا يبدو أنه سيرة ذاتية. يرجى رفع مستند سيرة ذاتية مهني بتنسيق PDF أو DOC أو DOCX.",
+      summaryEn: "The uploaded file does not appear to be a resume. Please upload a PDF, DOC, or DOCX resume document.",
+      summaryAr: "الملف المرفوع لا يبدو سيرة ذاتية. يرجى رفع ملف سيرة ذاتية بصيغة PDF أو DOC أو DOCX.",
       skills: [
-        { subject: "Technical / تقني", A: 0, fullMark: 100, match: false, nameEn: "Technical", nameAr: "تقني" },
-        { subject: "Soft Skills / مهارات ناعمة", A: 0, fullMark: 100, match: false, nameEn: "Soft Skills", nameAr: "مهارات ناعمة" },
+        { subject: "Technical Skills / المهارات التقنية", A: 0, fullMark: 100, match: false, nameEn: "Technical Skills", nameAr: "المهارات التقنية" },
+        { subject: "Soft Skills / المهارات الشخصية", A: 0, fullMark: 100, match: false, nameEn: "Soft Skills", nameAr: "المهارات الشخصية" },
         { subject: "Structure / الهيكلية", A: 0, fullMark: 100, match: false, nameEn: "Structure", nameAr: "الهيكلية" },
         { subject: "Impact / التأثير", A: 0, fullMark: 100, match: false, nameEn: "Impact", nameAr: "التأثير" },
-        { subject: "Relevance / الملاءمة", A: 0, fullMark: 100, match: false, nameEn: "Relevance", nameAr: "الملاءمة" },
+        { subject: "Keyword Relevance / الملاءمة", A: 0, fullMark: 100, match: false, nameEn: "Keyword Relevance", nameAr: "الملاءمة" },
       ],
-      checks: [
-        { labelEn: "File Format (Resume)", labelAr: "تنسيق الملف (سيرة ذاتية)", status: 'fail' },
-      ],
-      suggestions: [
-        {
-          id: "err-1",
-          titleEn: "Invalid File Type",
-          titleAr: "نوع ملف غير صالح",
-          descEn: "Khabir AI only accepts PDF, DOC, and DOCX files for resume analysis. Please upload a valid resume document.",
-          descAr: "خبير AI يقبل فقط ملفات PDF و DOC و DOCX. يرجى رفع ملف سيرة ذاتية صالح.",
-          impact: "High"
-        }
-      ]
+      checks: [{ labelEn: "File Format (Resume)", labelAr: "تنسيق الملف (سيرة ذاتية)", status: "fail" }],
+      suggestions: [{
+        id: "err-1", titleEn: "Invalid File", titleAr: "ملف غير صالح",
+        descEn: "Please upload a resume in PDF, DOC, or DOCX format. Photos and images are not supported.",
+        descAr: "يرجى رفع سيرة ذاتية بتنسيق PDF أو DOC أو DOCX. الصور غير مدعومة.", impact: "High"
+      }]
     };
   }
 
   try {
+    const prompt = buildPrompt(fileName, resumeText, jobDescription, meta);
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
-        { role: "system", content: ANALYSIS_SYSTEM_PROMPT },
-        { role: "user", content: buildUserPrompt(fileName, jobDescription) }
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: prompt },
       ],
       response_format: { type: "json_object" },
-      max_completion_tokens: 2000,
-      temperature: 0.7,
+      max_completion_tokens: 2500,
+      temperature: 0.6,
     });
 
     const raw = response.choices[0]?.message?.content;
@@ -156,20 +159,19 @@ export async function analyzeResume(fileName: string, jobDescription?: string): 
 
     const parsed = JSON.parse(raw) as AnalysisResult;
 
-    if (typeof parsed.score !== 'number' || !Array.isArray(parsed.skills) || !Array.isArray(parsed.checks) || !Array.isArray(parsed.suggestions)) {
+    if (
+      typeof parsed.score !== "number" ||
+      !Array.isArray(parsed.skills) || parsed.skills.length === 0 ||
+      !Array.isArray(parsed.checks) || parsed.checks.length === 0 ||
+      !Array.isArray(parsed.suggestions) || parsed.suggestions.length === 0
+    ) {
       throw new Error("Invalid AI response structure");
     }
-    if (parsed.skills.length === 0 || parsed.checks.length === 0 || parsed.suggestions.length === 0) {
-      throw new Error("Empty arrays in AI response");
-    }
 
-    if (parsed.matchRate === null || parsed.matchRate === undefined) {
-      delete parsed.matchRate;
-    }
-
+    if (parsed.matchRate === null) delete parsed.matchRate;
     return parsed;
-  } catch (error) {
-    console.error("AI analysis error, using fallback:", error);
-    return getFallbackResult(fileName, jobDescription);
+  } catch (err) {
+    console.error("AI analysis failed, using fallback:", err);
+    return getFallback(fileName, jobDescription);
   }
 }

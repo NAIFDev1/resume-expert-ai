@@ -16,8 +16,12 @@ Full-stack bilingual (Arabic/English) resume analysis platform with ATS scoring,
 
 ## AI Analysis Engine
 - `server/ai-engine.ts` — Real GPT-4o powered analysis via Replit AI Integrations (OpenAI compatible)
-- Sends filename + jobDescription to GPT-4o with structured JSON prompt
-- Returns: ATS score, bilingual summary, 5 skill dimensions, 7-8 ATS checks, 3 actionable suggestions
+- `server/text-extractor.ts` — PDF extraction via `pdf-parse`, DOCX/DOC via `mammoth`
+- File upload via `multer` (memoryStorage, 10 MB limit, PDF/DOC/DOCX only)
+- Extracted text (up to 8000 chars) is sent to GPT-4o in the prompt for deep content-aware analysis
+- Returns: ATS score, bilingual summary, 5 skill dimensions, 7-8 ATS checks, 3 actionable suggestions + `_meta` (wordCount, pageCount, method)
+- `_meta.method`: `"pdf"` | `"docx"` | `"filename-only"` (scanned PDFs)
+- Analysis page shows green badge "N words read · M pages" when real content was extracted
 - Graceful fallback: if AI fails, returns sensible default analysis (no crash)
 - Environment vars: `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`
 

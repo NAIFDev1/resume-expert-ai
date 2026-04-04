@@ -2,9 +2,11 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { analyzeResume } from "./ai-engine";
+import { extractTextFromFile } from "./text-extractor";
 import { hashPassword } from "./auth";
 import { z } from "zod";
 import passport from "passport";
+import multer from "multer";
 
 declare global {
   namespace Express {
@@ -15,6 +17,20 @@ declare global {
     }
   }
 }
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (_req, file, cb) => {
+    const allowed = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (allowed.includes(file.mimetype)) cb(null, true);
+    else cb(null, false);
+  },
+});
 
 function requireAuth(req: Request, res: Response, next: Function) {
   if (req.isAuthenticated()) return next();
@@ -82,37 +98,51 @@ export async function registerRoutes(
   });
 
   // ─── Resume Routes ────────────────────────────────────────────
-  app.post("/api/resumes/analyze", async (req, res) => {
+  app.post("/api/resumes/analyze", upload.single("file"), async (req, res) => {
     try {
-      const schema = z.object({
-        fileName: z.string().min(1),
-        fileType: z.string().min(1),
-        jobDescription: z.string().optional(),
-      });
+      const fileName = req.body.fileName || req.file?.originalname || "resume";
+      const fileType = req.file?.mimetype || req.body.fileType || "application/pdf";
+      const jobDescription = req.body.jobDescription || undefined;
 
-      const data = schema.parse(req.body);
-      const analysis = await analyzeResume(data.fileName, data.jobDescription);
+      if (!fileName) return res.status(400).json({ message: "fileName is required" });
 
+      let resumeText = "";
+      let meta: { pageCount?: number; wordCount: number; method: string } = {
+        wordCount: 0,
+        method: "filename-only",
+      };
+
+      if (req.file?.buffer) {
+        const extracted = await extractTextFromFile(req.file.buffer, fileName, fileType);
+        resumeText = extracted.text;
+        meta = {
+          pageCount: extracted.pageCount,
+          wordCount: extracted.wordCount,
+          method: extracted.method,
+        };
+        console.log(`[Extract] ${fileName}: ${meta.wordCount} words via ${meta.method}`);
+      }
+
+      const analysis = await analyzeResume(fileName, resumeText, jobDescription, meta);
       const userId = req.isAuthenticated() ? req.user!.id : null;
 
+      const analysisWithMeta = { ...analysis, _meta: meta };
+
       const resume = await storage.createResume({
-        fileName: data.fileName,
-        fileType: data.fileType,
-        jobDescription: data.jobDescription || null,
+        fileName,
+        fileType,
+        jobDescription: jobDescription || null,
         type: "analysis",
         score: analysis.score,
         matchRate: analysis.matchRate || null,
-        analysisResult: analysis,
+        analysisResult: analysisWithMeta,
         template: null,
         resumeData: null,
         userId,
       });
 
-      res.json({ id: resume.id, analysis, saved: !!userId });
+      res.json({ id: resume.id, analysis: analysisWithMeta, saved: !!userId, meta });
     } catch (error: any) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
-      }
       console.error("Analysis error:", error);
       res.status(500).json({ message: "Internal server error" });
     }

@@ -41,15 +41,16 @@ export default function Home() {
     }, 100);
 
     try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("fileName", file.name);
+      formData.append("fileType", file.type || "application/pdf");
+      if (jobDescription) formData.append("jobDescription", jobDescription);
+
       const response = await fetch("/api/resumes/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          fileName: file.name,
-          fileType: file.type || "application/pdf",
-          jobDescription: jobDescription || undefined,
-        }),
+        body: formData,
       });
 
       if (!response.ok) throw new Error("Analysis failed");

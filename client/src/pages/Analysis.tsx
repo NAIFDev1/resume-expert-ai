@@ -18,6 +18,7 @@ interface AnalysisResult {
   skills: { subject: string; A: number; fullMark: number; match?: boolean; nameEn?: string; nameAr?: string }[];
   checks: { labelEn: string; labelAr: string; status: 'pass' | 'fail' | 'warn' }[];
   suggestions: { id: string; titleEn: string; titleAr: string; descEn: string; descAr: string; impact: 'High' | 'Medium' }[];
+  _meta?: { wordCount?: number; pageCount?: number; method?: string };
 }
 
 export default function Analysis() {
@@ -152,6 +153,27 @@ export default function Analysis() {
                     {fileName}
                   </span>
                 </p>
+                {result?._meta && result._meta.method !== "filename-only" && (
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full border border-green-200 dark:border-green-800">
+                      <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                      {isRtl
+                        ? `تم قراءة ${result._meta.wordCount?.toLocaleString()} كلمة${result._meta.pageCount ? ` (${result._meta.pageCount} صفحات)` : ''}`
+                        : `${result._meta.wordCount?.toLocaleString()} words read${result._meta.pageCount ? ` · ${result._meta.pageCount} pages` : ''}`
+                      }
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800">
+                      {isRtl ? "تحليل محتوى حقيقي" : "Full content analyzed"}
+                    </span>
+                  </div>
+                )}
+                {result?._meta?.method === "filename-only" && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+                      {isRtl ? "تحليل بدون استخراج نص (PDF ممسوح)" : "Filename-based analysis (scanned PDF)"}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="flex flex-wrap gap-3 w-full md:w-auto shrink-0">
                 <Button variant="outline" className="flex-1 md:flex-none rounded-xl font-semibold h-12 px-6 border-border shadow-sm hover:shadow-md transition-all bg-background">
