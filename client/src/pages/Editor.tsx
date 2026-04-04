@@ -5,14 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout, Wand2, Loader2, Languages } from "lucide-react";
+import { Download, Save, User, Briefcase, GraduationCap, Sparkles, Layout, Wand2, Loader2, Languages, LogIn } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useReactToPrint } from "react-to-print";
+import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Editor() {
   const [isRtl, setIsRtl] = useState(false);
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   const [activeTemplate, setActiveTemplate] = useState("classic");
   const componentRef = useRef<HTMLDivElement>(null);
   const [isImproving, setIsImproving] = useState(false);
@@ -103,6 +107,15 @@ export default function Editor() {
   };
 
   const handleSave = async () => {
+    if (!isAuthenticated) {
+      toast({
+        title: isRtl ? "يجب تسجيل الدخول" : "Login Required",
+        description: isRtl ? "سجل دخولك لحفظ السيرة الذاتية" : "Sign in to save your resume",
+        variant: "destructive",
+      });
+      setTimeout(() => setLocation("/login"), 1200);
+      return;
+    }
     try {
       const response = await fetch("/api/resumes/editor", {
         method: "POST",
@@ -142,6 +155,32 @@ export default function Editor() {
   return (
     <div className="min-h-screen bg-secondary/10 font-sans flex flex-col pt-40 lg:pt-48 pb-12">
       <Navbar />
+
+      {/* Guest save banner */}
+      {!isAuthenticated && (
+        <div className="fixed top-[70px] left-0 right-0 z-40 bg-amber-500 text-white px-4 py-3 shadow-lg">
+          <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 font-medium text-sm">
+              <LogIn className="h-4 w-4 shrink-0" />
+              <span>
+                {isRtl
+                  ? "أنت تتصفح كمضيف — سجل دخولك لحفظ سيرتك الذاتية."
+                  : "You're browsing as a guest — sign in to save your resume."
+                }
+              </span>
+            </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="h-8 rounded-lg font-bold text-xs bg-white/20 hover:bg-white/30 text-white border-0 shrink-0"
+              onClick={() => setLocation("/login")}
+              data-testid="button-editor-signin"
+            >
+              {isRtl ? "تسجيل الدخول" : "Sign In"}
+            </Button>
+          </div>
+        </div>
+      )}
       
       <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-6 h-full flex flex-col">
         <div className="flex flex-col lg:flex-row gap-6 h-full min-h-[calc(100vh-140px)]">

@@ -3,8 +3,9 @@ import { SkillsRadar } from "@/components/dashboard/SkillsRadar";
 import { ATSChecklist } from "@/components/dashboard/ATSChecklist";
 import { ImprovementSuggestions } from "@/components/dashboard/ImprovementSuggestions";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, ArrowLeft, Loader2, Sparkles, Target, Zap, CheckCircle2 } from "lucide-react";
-import { Link } from "wouter";
+import { Download, Share2, ArrowLeft, Loader2, Sparkles, Target, Zap, CheckCircle2, LogIn, X } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
@@ -25,7 +26,10 @@ export default function Analysis() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasJD, setHasJD] = useState(false);
   const [fileName, setFileName] = useState("resume.pdf");
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [, setLocation] = useLocation();
   const reportRef = useRef<HTMLDivElement>(null);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const handlePrint = useReactToPrint({
     contentRef: reportRef,
@@ -85,6 +89,41 @@ export default function Analysis() {
   return (
     <div className="min-h-screen bg-secondary/10 font-sans selection:bg-primary selection:text-primary-foreground pb-20">
       <Navbar />
+
+      {/* Guest Banner */}
+      {!authLoading && !isAuthenticated && !bannerDismissed && (
+        <div className="fixed top-[70px] left-0 right-0 z-40 bg-primary text-primary-foreground px-4 py-3 shadow-lg">
+          <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 font-medium text-sm">
+              <LogIn className="h-4 w-4 shrink-0" />
+              <span>
+                {isRtl
+                  ? "لم يتم حفظ هذا التحليل. سجل دخولك للاحتفاظ بسجلاتك."
+                  : "This analysis was not saved. Sign in to keep your history."
+                }
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-8 rounded-lg font-bold text-xs bg-white/20 hover:bg-white/30 text-white border-0"
+                onClick={() => setLocation("/login")}
+                data-testid="button-banner-signin"
+              >
+                {isRtl ? "تسجيل الدخول" : "Sign In"}
+              </Button>
+              <button
+                className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-white/20 transition-colors"
+                onClick={() => setBannerDismissed(true)}
+                data-testid="button-banner-dismiss"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-[1600px] px-4 md:px-6 mx-auto pt-40 lg:pt-48">
         <AnimatePresence>

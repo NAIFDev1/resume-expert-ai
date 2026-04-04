@@ -5,14 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { 
   FileText, 
   History, 
-  Download, 
   Trash2, 
   ExternalLink, 
   Plus, 
   Layout,
   BarChart2,
   Loader2,
-  Inbox
+  Inbox,
+  Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -20,6 +20,7 @@ import { Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ResumeRecord {
   id: string;
@@ -42,6 +43,7 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
@@ -80,6 +82,13 @@ export default function Dashboard() {
       <main className="container max-w-[1200px] mx-auto px-4 pt-40 lg:pt-48 pb-12" dir={isRtl ? "rtl" : "ltr"}>
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 mt-4">
           <div className={isRtl ? "text-right w-full" : "text-left w-full"}>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <span className="text-sm font-bold text-primary uppercase tracking-wide">
+                {isRtl ? "مرحباً بعودتك" : "Welcome back"}
+                {user && `, ${user.username}`}
+              </span>
+            </div>
             <h1 className="text-3xl md:text-4xl font-heading font-bold mb-2 text-foreground" data-testid="text-dashboard-title">
               {isRtl ? "لوحة التحكم" : "Dashboard"}
             </h1>

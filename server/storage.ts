@@ -1,6 +1,6 @@
 import { type User, type InsertUser, type Resume, type InsertResume, users, resumes } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, isNull, or } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -8,9 +8,9 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   createResume(data: InsertResume): Promise<Resume>;
   getResume(id: string): Promise<Resume | undefined>;
-  getAllResumes(): Promise<Resume[]>;
-  deleteResume(id: string): Promise<boolean>;
-  getResumeStats(): Promise<{ totalFiles: number; avgScore: number; templatesUsed: number }>;
+  getResumesByUser(userId: string): Promise<Resume[]>;
+  deleteResume(id: string, userId?: string): Promise<boolean>;
+  getResumeStats(userId: string): Promise<{ totalFiles: number; avgScore: number; templatesUsed: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -39,17 +39,22 @@ export class DatabaseStorage implements IStorage {
     return resume;
   }
 
-  async getAllResumes(): Promise<Resume[]> {
-    return db.select().from(resumes).orderBy(desc(resumes.createdAt));
+  async getResumesByUser(userId: string): Promise<Resume[]> {
+    return db.select().from(resumes)
+      .where(eq(resumes.userId, userId))
+      .orderBy(desc(resumes.createdAt));
   }
 
-  async deleteResume(id: string): Promise<boolean> {
-    const result = await db.delete(resumes).where(eq(resumes.id, id)).returning();
+  async deleteResume(id: string, userId?: string): Promise<boolean> {
+    const where = userId
+      ? eq(resumes.id, id)
+      : eq(resumes.id, id);
+    const result = await db.delete(resumes).where(where).returning();
     return result.length > 0;
   }
 
-  async getResumeStats(): Promise<{ totalFiles: number; avgScore: number; templatesUsed: number }> {
-    const all = await db.select().from(resumes);
+  async getResumeStats(userId: string): Promise<{ totalFiles: number; avgScore: number; templatesUsed: number }> {
+    const all = await db.select().from(resumes).where(eq(resumes.userId, userId));
     const totalFiles = all.length;
     const scores = all.filter(r => r.score != null).map(r => r.score!);
     const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
