@@ -2,6 +2,8 @@
 
 **AI-Powered Resume Analyzer & ATS Optimizer** | مشروع تخرج
 
+> 🔗 **Live demo:** [naifdev1.github.io/resume-expert-ai](https://naifdev1.github.io/resume-expert-ai/)
+
 Khabir (خبير) is a full-stack resume analysis and improvement platform. Upload your resume, get a detailed ATS compatibility analysis with skills detection and actionable recommendations, then rebuild your resume in an ATS-friendly format with AI-assisted writing tools.
 
 ---
