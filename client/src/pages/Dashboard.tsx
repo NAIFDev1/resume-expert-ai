@@ -12,7 +12,8 @@ import {
   BarChart2,
   Loader2,
   Inbox,
-  Sparkles
+  Sparkles,
+  Pencil
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -71,6 +72,14 @@ export default function Dashboard() {
       toast({
         title: isRtl ? "تم الحذف" : "Deleted",
         description: isRtl ? "تم حذف السجل بنجاح" : "Record deleted successfully",
+      });
+    },
+    // [L-3] Handle delete errors — show user feedback instead of silently failing
+    onError: () => {
+      toast({
+        title: isRtl ? "فشل الحذف" : "Delete failed",
+        description: isRtl ? "تعذر حذف السجل. حاول مرة أخرى." : "Could not delete the record. Please try again.",
+        variant: "destructive",
       });
     },
   });
@@ -222,6 +231,18 @@ export default function Dashboard() {
                                 data-testid={`button-view-${file.id}`}
                               >
                                 <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {file.type === "editor" && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 rounded-lg hover:bg-primary/10 hover:text-primary"
+                                onClick={() => setLocation(`/editor?id=${file.id}`)}
+                                data-testid={`button-edit-${file.id}`}
+                                title={isRtl ? "فتح في المحرر" : "Open in editor"}
+                              >
+                                <Pencil className="h-4 w-4" />
                               </Button>
                             )}
                             <Button 

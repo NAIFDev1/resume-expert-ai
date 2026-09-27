@@ -2,9 +2,12 @@ import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadius
 import { useState, useEffect } from "react";
 
 interface SkillData {
-  nameEn: string;
-  nameAr: string;
-  score: number;
+  subject: string;
+  A: number;
+  fullMark: number;
+  match?: boolean;
+  nameEn?: string;
+  nameAr?: string;
 }
 
 interface SkillsRadarProps {
@@ -23,18 +26,18 @@ export function SkillsRadar({ data }: SkillsRadarProps) {
   }, []);
 
   const defaultData: SkillData[] = [
-    { nameEn: "Frontend", nameAr: "تطوير الواجهات", score: 90 },
-    { nameEn: "Backend", nameAr: "تطوير الخوادم", score: 75 },
-    { nameEn: "Database", nameAr: "قواعد البيانات", score: 60 },
-    { nameEn: "DevOps", nameAr: "العمليات", score: 40 },
-    { nameEn: "Testing", nameAr: "الاختبار", score: 85 },
-    { nameEn: "UI/UX", nameAr: "تصميم الواجهات", score: 70 },
+    { subject: "Frontend", nameEn: "Frontend", nameAr: "تطوير الواجهات", A: 90, fullMark: 100 },
+    { subject: "Backend", nameEn: "Backend", nameAr: "تطوير الخوادم", A: 75, fullMark: 100 },
+    { subject: "Database", nameEn: "Database", nameAr: "قواعد البيانات", A: 60, fullMark: 100 },
+    { subject: "DevOps", nameEn: "DevOps", nameAr: "العمليات", A: 40, fullMark: 100 },
+    { subject: "Testing", nameEn: "Testing", nameAr: "الاختبار", A: 85, fullMark: 100 },
+    { subject: "UI/UX", nameEn: "UI/UX", nameAr: "تصميم الواجهات", A: 70, fullMark: 100 },
   ];
 
   const chartData = (data || defaultData).map(item => ({
-    subject: isRtl ? item.nameAr : item.nameEn,
-    score: item.score,
-    fullMark: 100,
+    subject: isRtl ? (item.nameAr ?? item.subject) : (item.nameEn ?? item.subject),
+    score: item.A,
+    fullMark: item.fullMark,
   }));
 
   return (

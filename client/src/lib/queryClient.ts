@@ -44,10 +44,12 @@ export const getQueryFn: <T>(options: {
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      // [C-3] returnNull on 401 — prevents unhandled errors when session expires mid-session
+      queryFn: getQueryFn({ on401: "returnNull" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      // [M-1] 60s staleTime — data refreshes automatically (was: Infinity which never updated)
+      staleTime: 60 * 1000,
       retry: false,
     },
     mutations: {

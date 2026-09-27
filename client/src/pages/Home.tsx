@@ -10,6 +10,15 @@ import {
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+const MAX_RESUME_BYTES = 10 * 1024 * 1024; // keep in sync with server multer limit
+
+function isAllowedResumeFile(file: File): boolean {
+  const n = file.name.toLowerCase();
+  if (!n.endsWith(".pdf") && !n.endsWith(".doc") && !n.endsWith(".docx")) return false;
+  return true;
+}
 
 export default function Home() {
   const [isRtl, setIsRtl] = useState(false);
@@ -20,6 +29,7 @@ export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkLang = () => setIsRtl(document.documentElement.dir === 'rtl');
@@ -30,6 +40,23 @@ export default function Home() {
   }, []);
 
   const handleUpload = useCallback(async (file: File) => {
+    if (!isAllowedResumeFile(file)) {
+      toast({
+        title: isRtl ? "نوع الملف غير مدعوم" : "Unsupported file type",
+        description: isRtl ? "استخدم PDF أو DOC أو DOCX فقط." : "Please use PDF, DOC, or DOCX only.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (file.size > MAX_RESUME_BYTES) {
+      toast({
+        title: isRtl ? "الملف كبير جداً" : "File too large",
+        description: isRtl ? "الحد الأقصى 10 ميجابايت." : "Maximum size is 10 MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSelectedFile(file);
     setUploading(true);
     setUploadProgress(0);
@@ -53,7 +80,10 @@ export default function Home() {
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Analysis failed");
+      if (!response.ok) {
+        const errText = await response.text().catch(() => "");
+        throw new Error(errText || `HTTP ${response.status}`);
+      }
       const result = await response.json();
 
       clearInterval(interval);
@@ -62,12 +92,18 @@ export default function Home() {
       setTimeout(() => {
         setLocation(`/analysis?id=${result.id}`);
       }, 600);
-    } catch {
+    } catch (err: unknown) {
       clearInterval(interval);
       setUploading(false);
       setUploadProgress(0);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast({
+        title: isRtl ? "تعذّر رفع الملف" : "Upload failed",
+        description: msg.slice(0, 200) || (isRtl ? "تحقق من الاتصال وحجم الملف." : "Check your connection and file size."),
+        variant: "destructive",
+      });
     }
-  }, [setLocation, jobDescription]);
+  }, [setLocation, jobDescription, toast, isRtl]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -285,7 +321,7 @@ export default function Home() {
                     <Upload className="h-8 w-8 text-muted-foreground" />
                   </div>
                   <h3 className="text-2xl font-bold mb-3">{isRtl ? "اسحب وأفلت السيرة الذاتية هنا" : "Drag and drop your resume here"}</h3>
-                  <p className="text-muted-foreground mb-8 font-medium">{isRtl ? "يدعم PDF, DOC, DOCX (الحد الأقصى 5MB)" : "Supports PDF, DOC, DOCX (Max 5MB)"}</p>
+                  <p className="text-muted-foreground mb-8 font-medium">{isRtl ? "يدعم PDF, DOC, DOCX (الحد الأقصى 10 ميجابايت)" : "Supports PDF, DOC, DOCX (max 10 MB)"}</p>
                   <Button size="lg" className="rounded-full px-8 font-semibold h-12 shadow-sm hover:shadow-md transition-shadow">
                     {isRtl ? "أو اضغط لاختيار ملف" : "Or Click to Select File"}
                   </Button>
@@ -438,16 +474,8 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <TemplateCard 
-              name={isRtl ? "الكلاسيكي" : "Classic"} 
-              desc={isRtl ? "مثالي للقطاعات الرسمية والشركات." : "Perfect for corporate and traditional roles."}
-            />
-            <TemplateCard 
-              name={isRtl ? "العصري" : "Modern"} 
-              desc={isRtl ? "تصميم أنيق للأدوار التقنية والإبداعية." : "Sleek design for tech and creative roles."}
-            />
-            <TemplateCard 
-              name={isRtl ? "البسيط" : "Minimal"} 
-              desc={isRtl ? "نظيف ومباشر يركز على المحتوى." : "Clean and direct, focusing entirely on content."}
+              name={isRtl ? "متوافق مع ATS" : "ATS Friendly"} 
+              desc={isRtl ? "تنسيق وحيد مصمم لتجاوز الفلاتر الآلية بأقصى دقة." : "Single layout built to pass every automated filter with ease."}
             />
           </div>
         </div>

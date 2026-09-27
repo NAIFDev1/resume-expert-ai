@@ -1,7 +1,7 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { analyzeResume } from "./ai-engine";
+import { analyzeResume, translateResumeData, improveResumeContent } from "./ai-engine";
 import { extractTextFromFile } from "./text-extractor";
 import { hashPassword } from "./auth";
 import { z } from "zod";
@@ -18,24 +18,61 @@ declare global {
   }
 }
 
+const allowedResumeMime = new Set([
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
+
+function isAllowedResumeFile(mimetype: string, originalName: string): boolean {
+  const name = (originalName || "").toLowerCase();
+  const extOk = name.endsWith(".pdf") || name.endsWith(".doc") || name.endsWith(".docx");
+  if (allowedResumeMime.has(mimetype)) return true;
+  // Windows / some browsers send empty or generic MIME; trust extension after basic check
+  if (extOk && (!mimetype || mimetype === "application/octet-stream")) return true;
+  // OOXML is a zip; some clients report .docx as application/zip
+  if (mimetype === "application/zip" && name.endsWith(".docx")) return true;
+  return false;
+}
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
   fileFilter: (_req, file, cb) => {
-    const allowed = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    if (allowed.includes(file.mimetype)) cb(null, true);
+    if (isAllowedResumeFile(file.mimetype || "", file.originalname || "")) cb(null, true);
     else cb(null, false);
   },
 });
 
-function requireAuth(req: Request, res: Response, next: Function) {
+function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) return next();
   res.status(401).json({ message: "Unauthorized" });
 }
+
+// Shared schema for resume editor data (mirrors ResumeEditorData in ai-engine)
+const resumeDataSchema = z.object({
+  fullName: z.string(),
+  jobTitle: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  summary: z.string(),
+  experience: z.string(),
+  education: z.string(),
+  skills: z.array(z.string()).optional().default([]),
+  links: z.array(z.object({ label: z.string(), url: z.string() })).optional().default([]),
+  experiences: z
+    .array(
+      z.object({
+        role: z.string(),
+        company: z.string(),
+        startDate: z.string(),
+        endDate: z.string(),
+        bullets: z.string(),
+      })
+    )
+    .optional()
+    .default([]),
+});
 
 export async function registerRoutes(
   httpServer: Server,
@@ -120,7 +157,10 @@ export async function registerRoutes(
           wordCount: extracted.wordCount,
           method: extracted.method,
         };
-        console.log(`[Extract] ${fileName}: ${meta.wordCount} words via ${meta.method}`);
+        // [L-2] Only log in development, not production
+        if (process.env.NODE_ENV !== "production") {
+          console.log(`[Extract] ${fileName}: ${meta.wordCount} words via ${meta.method}`);
+        }
       }
 
       const analysis = await analyzeResume(fileName, resumeText, jobDescription, meta);
@@ -136,7 +176,7 @@ export async function registerRoutes(
         score: analysis.score,
         matchRate: analysis.matchRate || null,
         analysisResult: analysisWithMeta,
-        template: null,
+        template: "classic",
         resumeData: null,
         userId,
       });
@@ -153,15 +193,7 @@ export async function registerRoutes(
       const schema = z.object({
         fileName: z.string().default("Untitled Resume"),
         template: z.string().default("classic"),
-        resumeData: z.object({
-          fullName: z.string(),
-          jobTitle: z.string(),
-          email: z.string(),
-          phone: z.string(),
-          summary: z.string(),
-          experience: z.string(),
-          education: z.string(),
-        }),
+        resumeData: resumeDataSchema,
       });
 
       const data = schema.parse(req.body);
@@ -185,6 +217,80 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Invalid request data", errors: error.errors });
       }
       console.error("Editor save error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Update an existing editor resume (autosave / continue editing)
+  app.put("/api/resumes/editor/:id", requireAuth, async (req, res) => {
+    try {
+      const schema = z.object({
+        fileName: z.string().default("Untitled Resume"),
+        template: z.string().default("classic"),
+        resumeData: resumeDataSchema,
+      });
+
+      const data = schema.parse(req.body);
+      const resumeId = req.params.id as string;
+      const existing = await storage.getResume(resumeId);
+      if (!existing) {
+        return res.status(404).json({ message: "Resume not found" });
+      }
+      if (existing.userId !== req.user!.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const updated = await storage.updateResume(resumeId, {
+        fileName: data.fileName,
+        template: data.template,
+        resumeData: data.resumeData,
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      console.error("Editor update error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/resumes/translate", async (req, res) => {
+    try {
+      const schema = z.object({
+        targetLang: z.enum(["en", "ar"]),
+        resumeData: resumeDataSchema,
+      });
+
+      const data = schema.parse(req.body);
+      const translated = await translateResumeData(data.resumeData, data.targetLang);
+      res.json(translated);
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      console.error("Translate resume error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // [H-2] AI-powered resume content improvement
+  app.post("/api/resumes/improve", async (req, res) => {
+    try {
+      const schema = z.object({
+        targetLang: z.enum(["en", "ar"]).default("en"),
+        resumeData: resumeDataSchema,
+      });
+
+      const data = schema.parse(req.body);
+      const improved = await improveResumeContent(data.resumeData, data.targetLang);
+      res.json({ resumeData: improved });
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      console.error("Improve resume error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

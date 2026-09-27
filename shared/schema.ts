@@ -1,27 +1,28 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { mysqlTable, text, varchar, int, timestamp, json } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const users = mysqlTable("users", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const resumes = pgTable("resumes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id),
+export const resumes = mysqlTable("resumes", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
+  userId: varchar("user_id", { length: 36 }).references(() => users.id),
   fileName: text("file_name").notNull(),
   fileType: text("file_type").notNull(),
   jobDescription: text("job_description"),
-  template: text("template").default("classic"),
-  type: text("type").notNull().default("analysis"),
-  score: integer("score"),
-  matchRate: integer("match_rate"),
-  analysisResult: jsonb("analysis_result"),
-  resumeData: jsonb("resume_data"),
+  // VARCHAR so MySQL allows DEFAULT (TEXT/BLOB cannot have defaults)
+  template: varchar("template", { length: 64 }).default("classic"),
+  type: varchar("type", { length: 64 }).notNull().default("analysis"),
+  score: int("score"),
+  matchRate: int("match_rate"),
+  analysisResult: json("analysis_result"),
+  resumeData: json("resume_data"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

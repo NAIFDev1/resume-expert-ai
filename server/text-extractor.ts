@@ -1,13 +1,16 @@
 import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse") as (buffer: Buffer) => Promise<{ text: string; numpages: number }>;
+const require = (import.meta as { url?: string })?.url
+  ? createRequire(import.meta.url)
+  : createRequire(process.cwd() + "/");
+const _pdfMod = require("pdf-parse");
+const pdfParse = (typeof _pdfMod === "function" ? _pdfMod : _pdfMod.default) as (buffer: Buffer) => Promise<{ text: string; numpages: number }>;
 import mammoth from "mammoth";
 
 export interface ExtractionResult {
   text: string;
   pageCount?: number;
   wordCount: number;
-  method: "pdf" | "docx" | "filename-only";
+  method: "pdf" | "docx" | "doc" | "filename-only";
 }
 
 export async function extractTextFromFile(
@@ -70,7 +73,7 @@ export async function extractTextFromFile(
         return {
           text,
           wordCount: text.split(/\s+/).filter(Boolean).length,
-          method: "docx",
+          method: "doc" as const,
         };
       }
     } catch {}

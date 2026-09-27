@@ -1,12 +1,14 @@
+import { randomUUID } from "node:crypto";
 import { type User, type InsertUser, type Resume, type InsertResume, users, resumes } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, isNull, or } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   createResume(data: InsertResume): Promise<Resume>;
+  updateResume(id: string, data: Partial<Pick<InsertResume, "fileName" | "template" | "resumeData">>): Promise<Resume | undefined>;
   getResume(id: string): Promise<Resume | undefined>;
   getResumesByUser(userId: string): Promise<Resume[]>;
   deleteResume(id: string, userId?: string): Promise<boolean>;
@@ -25,18 +27,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    const id = randomUUID();
+    await db.insert(users).values({ ...insertUser, id });
+    const user = await this.getUser(id);
+    if (!user) throw new Error("Failed to create user");
     return user;
   }
 
   async createResume(data: InsertResume): Promise<Resume> {
-    const [resume] = await db.insert(resumes).values(data).returning();
+    const id = randomUUID();
+    await db.insert(resumes).values({ ...data, id });
+    const resume = await this.getResume(id);
+    if (!resume) throw new Error("Failed to create resume");
     return resume;
   }
 
   async getResume(id: string): Promise<Resume | undefined> {
     const [resume] = await db.select().from(resumes).where(eq(resumes.id, id));
     return resume;
+  }
+
+  async updateResume(id: string, data: Partial<Pick<InsertResume, "fileName" | "template" | "resumeData">>): Promise<Resume | undefined> {
+    await db.update(resumes)
+      .set({ ...data })
+      .where(eq(resumes.id, id));
+    return this.getResume(id);
   }
 
   async getResumesByUser(userId: string): Promise<Resume[]> {
@@ -46,11 +61,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteResume(id: string, userId?: string): Promise<boolean> {
-    const where = userId
-      ? eq(resumes.id, id)
-      : eq(resumes.id, id);
-    const result = await db.delete(resumes).where(where).returning();
-    return result.length > 0;
+    const existing = await this.getResume(id);
+    if (!existing) return false;
+    if (userId && existing.userId !== userId) return false;
+    await db.delete(resumes).where(eq(resumes.id, id));
+    return true;
   }
 
   async getResumeStats(userId: string): Promise<{ totalFiles: number; avgScore: number; templatesUsed: number }> {

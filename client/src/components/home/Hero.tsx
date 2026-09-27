@@ -1,11 +1,18 @@
-import { Button } from "@/components/ui/button";
 import { UploadZone } from "./UploadZone";
 import HeroImage from "@/assets/hero-analysis.png";
 import { CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 
 export function Hero() {
-  const isRtl = document.documentElement.dir === "rtl";
+  const [isRtl, setIsRtl] = useState(document.documentElement.dir === "rtl");
+
+  useEffect(() => {
+    const checkDir = () => setIsRtl(document.documentElement.dir === "rtl");
+    const observer = new MutationObserver(checkDir);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["dir"] });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section className="relative overflow-hidden pt-12 pb-24 lg:pt-20 lg:pb-32">

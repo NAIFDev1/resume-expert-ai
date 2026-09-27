@@ -22,8 +22,9 @@ export const chatStorage: IChatStorage = {
   },
 
   async createConversation(title: string) {
-    const [conversation] = await db.insert(conversations).values({ title }).returning();
-    return conversation;
+    const [row] = await db.insert(conversations).values({ title }).$returningId();
+    const [conversation] = await db.select().from(conversations).where(eq(conversations.id, row.id));
+    return conversation!;
   },
 
   async deleteConversation(id: number) {
@@ -36,8 +37,9 @@ export const chatStorage: IChatStorage = {
   },
 
   async createMessage(conversationId: number, role: string, content: string) {
-    const [message] = await db.insert(messages).values({ conversationId, role, content }).returning();
-    return message;
+    const [row] = await db.insert(messages).values({ conversationId, role, content }).$returningId();
+    const [message] = await db.select().from(messages).where(eq(messages.id, row.id));
+    return message!;
   },
 };
 
