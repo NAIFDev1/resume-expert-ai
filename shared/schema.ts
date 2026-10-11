@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`(UUID())`),
-  username: text("username").notNull().unique(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
   password: text("password").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

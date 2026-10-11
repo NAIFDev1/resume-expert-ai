@@ -6,6 +6,7 @@ import type { Express } from "express";
 import session from "express-session";
 import MySQLStoreFactory from "express-mysql-session";
 import mysql from "mysql2";
+import { getDatabaseConfig } from "../shared/database-config";
 
 // [C-2] SESSION_SECRET is required — no insecure hardcoded fallback
 const SESSION_SECRET = process.env.SESSION_SECRET;
@@ -24,7 +25,7 @@ const MySQLStore = MySQLStoreFactory(session);
 // conflict with the project's identical runtime types — cast through the ctor param.
 type SessionStoreConnection = ConstructorParameters<typeof MySQLStore>[1];
 const sessionConnection: SessionStoreConnection =
-  mysql.createPool(process.env.DATABASE_URL!) as unknown as SessionStoreConnection;
+  mysql.createPool(getDatabaseConfig()) as unknown as SessionStoreConnection;
 
 const sessionStore = new MySQLStore(
   {
