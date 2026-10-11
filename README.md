@@ -2,7 +2,7 @@
 
 **AI-Powered Resume Analyzer & ATS Optimizer** | مشروع تخرج
 
-> 🔗 **Live demo:** [naifdev1.github.io/resume-expert-ai](https://naifdev1.github.io/resume-expert-ai/)
+> 🔗 **Live demo:** [khabir-ai.onrender.com](https://khabir-ai.onrender.com/)
 
 Khabir (خبير) is a full-stack resume analysis and improvement platform. Upload your resume, get a detailed ATS compatibility analysis with skills detection and actionable recommendations, then rebuild your resume in an ATS-friendly format with AI-assisted writing tools.
 
@@ -153,3 +153,29 @@ Khabir AI is a graduation project focused on **helping Arabic-speaking job seeke
 ## License
 
 This project is for academic / graduation purposes. See repository owner for licensing.
+
+## Deployment — Render + Aiven
+
+The application is deployed at [khabir-ai.onrender.com](https://khabir-ai.onrender.com/).
+
+- **Web service:** Render, Node.js runtime, repository branch `main`.
+- **Database:** Aiven for MySQL, connected over TLS with CA verification.
+- **Root directory:** repository root (leave the Render field empty).
+- **Build command:** `npm install --include=dev && npm run build && npm run db:push`.
+- **Start command:** `npm start`.
+
+Configure these environment variables in Render:
+
+| Variable | Value |
+| --- | --- |
+| `NODE_ENV` | `production` |
+| `DATABASE_URL` | MySQL Service URI from Aiven |
+| `DATABASE_SSL_CA` | Complete Aiven CA certificate, including the BEGIN/END lines |
+| `SESSION_SECRET` | A generated random secret |
+| `COOKIE_SECURE` | `1` |
+
+Keep database credentials and session secrets in environment variables, outside the repository. The shared database configuration applies TLS to application queries, the session store, and Drizzle schema setup.
+
+The schema push command initializes tables in a new database. Review schema changes before deploying to a database that already contains data.
+
+Render's free web service may take longer to respond after a period of inactivity. AI-powered functionality requires a configured API key; without one, the application uses its built-in fallback behavior.
